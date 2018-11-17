@@ -1,0 +1,38 @@
+import inspect
+import logging
+import os
+import unittest
+
+from prvsnlib.provisioner import Provisioner
+
+logging.basicConfig(format='%(message)s', level=logging.INFO)
+
+
+class TestCommandTask(unittest.TestCase):
+
+    def runbook(self):
+        this_file = inspect.getfile(inspect.currentframe())
+        this_dir = os.path.dirname(os.path.abspath(this_file))
+        runbook = os.path.join(this_dir, 'runbook')
+        return runbook
+
+    def path(self):
+        return '/tmp/fjdhsalfhsajflkashdjfaskfhlsajkfasf'
+
+    def setUp(self):
+        if os.path.exists(self.path()):
+            os.unlink(self.path())
+
+    def tearDown(self):
+        if os.path.exists(self.path()):
+            os.unlink(self.path())
+
+    def testBash(self):
+        self.assertFalse(os.path.exists(self.path()), 'file should not exist yet; test set up incorrectly?')
+
+        p = Provisioner(
+            self.runbook(),
+            ['command'],
+        ).run()
+
+        self.assertTrue(os.path.exists(self.path()))
