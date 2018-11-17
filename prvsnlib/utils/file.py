@@ -25,7 +25,8 @@ def write_file_content(filepath, contents):
 
 def is_url(source):
     return source.startswith('http://') or \
-            source.startswith('file://')
+           source.startswith('https://') or \
+           source.startswith('file://')
 
 def get_file_contents(source, relative=None):
     contents = None
