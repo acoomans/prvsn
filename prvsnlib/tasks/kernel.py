@@ -12,8 +12,8 @@ class KernelModuleAction(enum.Enum):
 
 class KernelModuleTask(Task):
 
-    def __init__(self, module_name, action=KernelModuleAction.ADD):
-        Task.__init__(self)
+    def __init__(self, module_name, action, secure):
+        Task.__init__(self, secure)
         self._module_name = module_name
         self._action = action
 
@@ -35,5 +35,5 @@ class KernelModuleTask(Task):
         elif self._action == KernelModuleAction.ADD:
             return delete_string_from_file('/etc/modules', self._module_name)
 
-def module(d, action=KernelModuleAction.ADD):
-    KernelModuleTask(d, action)
+def module(d, action=KernelModuleAction.ADD, secure=False):
+    KernelModuleTask(d, action, secure)

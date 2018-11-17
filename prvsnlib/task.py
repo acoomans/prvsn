@@ -19,10 +19,15 @@ class Task:
     def setRole(cls, role):
         cls._role = role
 
-    def __init__(self):
+    @property
+    def secure(self):
+        return self._secure
+
+    def __init__(self, secure=False):
         self.__class__._queue.append(self)
         self._runbook = self.__class__._runbook
         self._role = self.__class__._role
+        self._secure = secure
 
     def run(self):
         out = 'No output'

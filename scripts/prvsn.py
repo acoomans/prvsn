@@ -19,7 +19,7 @@ def main():
     print("hello main")
     runbook = '/Users/arnaud/src/prvsn/tests/runbook/'
     Provisioner(runbook, [
-        'command'
+        'secure'
     ]).run()
 
 if __name__ == "__main__":

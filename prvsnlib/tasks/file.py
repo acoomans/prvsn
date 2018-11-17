@@ -12,8 +12,8 @@ class FileAction(enum.Enum):
 
 class FileTask(Task):
 
-    def __init__(self, source, file, replacements={}, action=FileAction.ADD):
-        Task.__init__(self)
+    def __init__(self, source, file, replacements, action, secure):
+        Task.__init__(self, secure)
         self._source = source
         self._file = file
         self._action = action
@@ -30,5 +30,5 @@ class FileTask(Task):
                                       self._file)
 
 
-def file(source, file, replacements={}, action=FileAction.ADD):
-    FileTask(source, file, replacements, action)
+def file(source, file, replacements={}, action=FileAction.ADD, secure=False):
+    FileTask(source, file, replacements, action, secure)

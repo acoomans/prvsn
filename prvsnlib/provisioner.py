@@ -79,8 +79,12 @@ class Provisioner:
     def run_tasks(self):
         for task in self._queue.tasks():
             logging.info(Colors.HEADER + '## ' + str(task) + Colors.END)
+
             out, err = task.run()
-            logging.info(out)
+            if task.secure: logging.info('(secure: output omitted)')
+            else: logging.info(out)
+
             if err:
-                logging.info(Colors.FAIL + err + Colors.END)
+                if not task.secure: logging.info(Colors.FAIL + err + Colors.END)
+                logging.info(Colors.FAIL + 'Task failed.' + Colors.END)
                 sys.exit(1)

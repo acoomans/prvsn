@@ -10,8 +10,8 @@ class CommandAction(enum.Enum):
 
 class CommandTask(Task):
 
-    def __init__(self, interpreter, cmd, action=CommandAction.RUN):
-        Task.__init__(self)
+    def __init__(self, interpreter, cmd, action, secure):
+        Task.__init__(self, secure)
         self._interpreter = interpreter
         self._cmd = cmd
         self._action = action
@@ -29,11 +29,11 @@ class CommandTask(Task):
         return cmd+out, ''
 
 
-def command(interpreter, cmd, action=CommandAction.RUN):
-    CommandTask(interpreter, cmd)
+def command(interpreter, cmd, action=CommandAction.RUN, secure=False):
+    CommandTask(interpreter, cmd, action, secure)
 
-def bash(cmd, action=CommandAction.RUN):
-    CommandTask(['bash', '-e'], cmd)
+def bash(cmd, action=CommandAction.RUN, secure=False):
+    CommandTask(['bash', '-e'], cmd, action, secure)
 
-def ruby(cmd, action=CommandAction.RUN):
-    CommandTask(['ruby'], cmd)
+def ruby(cmd, action=CommandAction.RUN, secure=False):
+    CommandTask(['ruby'], cmd, action, secure)

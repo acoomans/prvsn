@@ -47,7 +47,7 @@ def get_replace_write_file(source, relative, replacements, filepath):
                 original_data = f.readlines()
             shutil.copyfile(filepath, filepath + '.orig')
         else:
-            original_data = ''
+            original_data = []
 
         if not replacements: replacements = {}
 
@@ -56,7 +56,11 @@ def get_replace_write_file(source, relative, replacements, filepath):
         write_file_content(filepath, new_data)
 
         out = ''
-        for line in difflib.unified_diff(original_data, new_data, fromfile=filepath + '.orig', tofile=filepath):
+        for line in difflib.unified_diff(
+                original_data,
+                new_data.splitlines(keepends=True),
+                fromfile=filepath + '.orig',
+                tofile=filepath):
             out += line
         return out, ''
 

@@ -26,8 +26,8 @@ class PackageTask(Task):
                 cls._packageClass = YumPackageTask
         return cls._packageClass(*args, **kwargs)
 
-    def __init__(self, package_name='', action=PackageAction.INSTALL):
-        Task.__init__(self)
+    def __init__(self, package_name, action, secure):
+        Task.__init__(self, secure)
         self._package_name = package_name
         self._action = action
 
@@ -97,17 +97,17 @@ class YumPackageTask(PackageTask):
         return cmd+'\n'+out, ''
 
 
-def package(d, action=PackageAction.INSTALL):
-    PackageTask.package(d, action)
+def package(d, action=PackageAction.INSTALL, secure=False):
+    PackageTask.package(d, action, secure)
 
 
-def homebrew_package(d, action=PackageAction.INSTALL):
-    HomebrewPackageTask(d, action)
+def homebrew_package(d, action=PackageAction.INSTALL, secure=False):
+    HomebrewPackageTask(d, action, secure)
 
 
-def apt_package(d, action=PackageAction.INSTALL):
-    AptPackageTask(d, action)
+def apt_package(d, action=PackageAction.INSTALL, secure=False):
+    AptPackageTask(d, action, secure)
 
 
-def yum_package(d, action=PackageAction.INSTALL):
-    YumPackageTask(d, action)
+def yum_package(d, action=PackageAction.INSTALL, secure=False):
+    YumPackageTask(d, action, secure)
