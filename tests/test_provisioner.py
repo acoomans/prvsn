@@ -2,6 +2,9 @@ import inspect
 import logging
 import os
 import unittest
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from prvsnlib.provisioner import Provisioner
 from prvsnlib.task import Task
@@ -49,7 +52,7 @@ class TestProvisioner(unittest.TestCase):
             self.runbook(),
             ['provisioner'],
             queue=q,
-            extra_imports={'test_provisioner':['test']}
+            extra_imports={'tests.test_provisioner': ['test']}
         )
         self.assertFalse(cond, 'cond should be false; cond changed before task is run?')
 
@@ -65,7 +68,7 @@ class TestProvisioner(unittest.TestCase):
             self.runbook(),
             ['queue'],
             queue=q,
-            extra_imports={'test_provisioner': ['test']}
+            extra_imports={'tests.test_provisioner': ['test']}
         ).run()
 
         self.assertEqual(len(q), 2)

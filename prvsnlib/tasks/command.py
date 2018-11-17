@@ -1,10 +1,8 @@
-import enum
-
 from prvsnlib.utils.run import run
 from ..task import Task
 
 
-class CommandAction(enum.Enum):
+class CommandAction:
     RUN = 'run'
 
 

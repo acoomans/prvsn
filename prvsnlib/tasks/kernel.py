@@ -1,11 +1,9 @@
-import enum
-
 from prvsnlib.utils.file import add_string_if_not_present_in_file, delete_string_from_file
 from ..task import Task
 from prvsnlib.utils.run import run
 
 
-class KernelModuleAction(enum.Enum):
+class KernelModuleAction:
     ADD = 'add'
     DEL = 'delete'
 

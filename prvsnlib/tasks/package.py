@@ -1,11 +1,10 @@
-import enum
 import subprocess
 
 from prvsnlib.utils.run import run
 from ..task import Task
 
 
-class PackageAction(enum.Enum):
+class PackageAction:
     UPDATE = 'update'
     UPGRADE = 'upgrade'
     INSTALL = 'install'

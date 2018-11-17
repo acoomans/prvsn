@@ -1,4 +1,3 @@
-import enum
 import os
 
 from prvsnlib.utils.file import mkdir_p, get_replace_write_file
@@ -6,7 +5,7 @@ from prvsnlib.utils.string import replace_all
 from ..task import Task
 
 
-class FileAction(enum.Enum):
+class FileAction:
     ADD = 'add'
 
 

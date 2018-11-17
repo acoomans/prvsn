@@ -2,8 +2,14 @@ import difflib
 import errno
 import os
 import shutil
+import sys
 
-from urllib.request import urlopen
+from copy import copy
+
+if (sys.version_info < (3, 0)):
+    from urllib2 import urlopen
+else:
+    from urllib.request import urlopen
 
 from .string import replace_all
 
@@ -58,7 +64,7 @@ def get_replace_write_file(source, relative, replacements, filepath):
         out = ''
         for line in difflib.unified_diff(
                 original_data,
-                new_data.splitlines(keepends=True),
+                new_data.splitlines(True),
                 fromfile=filepath + '.orig',
                 tofile=filepath):
             out += line
@@ -76,7 +82,7 @@ def add_string_if_not_present_in_file(filepath, s):
         else:
             original_data = []
 
-        new_data = original_data.copy()
+        new_data = copy(original_data)
 
         need_to_add = True
 
@@ -105,7 +111,7 @@ def delete_string_from_file(filepath, s):
             original_data = f.readlines()
 
         shutil.copyfile(filepath, filepath+'.orig')
-        new_data = original_data.copy()
+        new_data = copy(original_data)
 
         need_to_save = False
 

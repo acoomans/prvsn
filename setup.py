@@ -25,5 +25,5 @@ setup(
 	install_requires=requirements,
 	scripts=['scripts/prvsn.py'],
 	packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-	test_suite='tests.test_project',
+	test_suite='tests',
 )
