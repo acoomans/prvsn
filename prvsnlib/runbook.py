@@ -1,3 +1,4 @@
+import logging
 import os
 import textwrap
 
@@ -45,6 +46,8 @@ class Runbook:
         return self._roles
 
     def create_scaffolding(self):
+
+        logging.info('Initializing runbook "' + self._path + '"')
 
         roles_path = os.path.join(self._path, 'roles')
         mkdir_p(roles_path)
