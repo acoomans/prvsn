@@ -82,7 +82,7 @@ class Provisioner:
 
     def run_tasks(self):
         logging.debug('Provisioner running tasks.')
-        for task in self._queue.tasks():
+        for task in self._queue.tasks:
             logging.header(str(task))
 
             out, err = task.run()
