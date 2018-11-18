@@ -12,6 +12,7 @@ if dir == 'scripts':
 from prvsnlib.packager import Packager
 from prvsnlib.provisioner import Provisioner
 from prvsnlib.runbook import Runbook
+from prvsnlib.utils.ssh import Ssh
 
 from prvsnlib.utils.validation import validate_runbook, validate_roles
 
@@ -56,6 +57,8 @@ def main():
             runbook,
             args.roles.split(',')
         ).run()
+    elif args.command == 'remote':
+        Ssh().command(['ls'])
     else:
         logging.error('Invalid command.')
         sys.exit(1)
