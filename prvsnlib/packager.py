@@ -3,10 +3,10 @@ import os
 import shutil
 import tempfile
 import textwrap
-import zipapp
 
 import prvsnlib
 from prvsnlib.utils.file import mkdir_p
+from prvsnlib.utils.zip import zipdir
 
 
 class Packager:
@@ -74,10 +74,18 @@ class Packager:
         self.prepare_package()
 
         logging.info('Building package at "' + self._dest + '"')
-        zipapp.create_archive(
+
+        def filter(path):
+            if path.endswith('pyc'):
+                return False
+            return True
+
+        zipdir(
             self._tmpdir,
-            target=self._dest
+            self._dest,
+            filter=filter
         )
+
         self.cleanup_package()
         logging.success('Packaged.')
 
