@@ -3,7 +3,7 @@ import logging
 import os
 import sys
 
-import prvsnlib.logging
+import prvsnlib.log
 
 from prvsnlib.queue import Queue
 from prvsnlib.role import Role
