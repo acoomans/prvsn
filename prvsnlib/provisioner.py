@@ -93,3 +93,4 @@ class Provisioner:
                 if not task.secure: logging.error(err)
                 logging.error('Task failed.')
                 sys.exit(1)
+        logging.success('Provisioned.')

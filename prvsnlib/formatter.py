@@ -7,14 +7,19 @@ from prvsnlib.utils.colors import Colors
 
 class LoggingLevels:
     HEADER = 25
+    SUCCESS = 26
 
 logging.addLevelName(LoggingLevels.HEADER, 'Header')
+logging.addLevelName(LoggingLevels.SUCCESS, 'Success')
 
 def header(message, *args, **kwargs):
     logging.log(LoggingLevels.HEADER, message, *args, **kwargs)
 
-logging.header = header
+def success(message, *args, **kwargs):
+    logging.log(LoggingLevels.SUCCESS, message, *args, **kwargs)
 
+logging.header = header
+logging.success = success
 
 class Formatter(logging.Formatter):
 
@@ -29,6 +34,8 @@ class Formatter(logging.Formatter):
             pass
         elif record.levelno == LoggingLevels.HEADER:
             res = Colors.HEADER + '# ' + res + Colors.END
+        elif record.levelno == LoggingLevels.SUCCESS:
+            res = Colors.OK + res + Colors.END
         elif record.levelno == logging.WARNING:
             res = Colors.WARNING + res + Colors.END
         elif record.levelno == logging.ERROR:
