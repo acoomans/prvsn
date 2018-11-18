@@ -6,6 +6,9 @@ class Role:
         self._name = name
         self._path = path
 
+    def __repr__(self):
+        return '<Role "' + self._name + '" (' + self._path + ')>'
+
     @property
     def path(self):
         return self._path
