@@ -23,7 +23,7 @@ setup(
 		'provision',
 	],
 	install_requires=requirements,
-	scripts=['scripts/prvsn.py'],
+	scripts=['scripts/prvsn'],
 	packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 	test_suite='tests',
 )
