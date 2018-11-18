@@ -1,6 +1,7 @@
 import os
 
 from .role import Role
+from .utils.file import mkdir_p
 
 
 class Runbook:
@@ -41,3 +42,38 @@ class Runbook:
             self._roles = roles
 
         return self._roles
+
+    def create_scaffolding(self):
+
+        roles_path = os.path.join(self._path, 'roles')
+        mkdir_p(roles_path)
+
+        base_roles_path = os.path.join(roles_path, 'base')
+        mkdir_p(base_roles_path)
+
+        main_base_roles_path = os.path.join(base_roles_path, 'main.py')
+        with open(main_base_roles_path, 'w') as f:
+            f.write('''
+# This is a template for a role
+
+bash('echo "hello"')
+
+package('pkill')
+
+file(
+    'yo.conf', 
+    '/etc/yo.conf', 
+    replacements={
+        'USERNAME': 'arnaud'
+    },
+)
+            ''')
+
+        files_base_roles_path = os.path.join(base_roles_path, 'files')
+        mkdir_p(files_base_roles_path)
+
+        with open(os.path.join(files_base_roles_path, 'yo.conf'), 'w') as f:
+            f.write('''
+username = USERNAME
+dob = 01/01/1970
+            ''')

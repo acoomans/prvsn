@@ -42,29 +42,47 @@ def validate_roles(runbook, roles):
             sys.exit(1)
     return True
 
+def validate_command(command):
+    if command == 'provision' or \
+            command == 'init':
+        return True
+    logging.error('Invalid command.')
+    sys.exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser(description='Simple machine provisioning tool.')
     parser.add_argument('-b', '--runbook', action='store', default='.', help='Path to the runbook (default: .)')
     parser.add_argument('-r', '--roles', action='store', default='', help='Roles to provision, comma-separated (default: none)')
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
+    parser.add_argument('command', nargs='?', default='provision', help="Command: provision (default, same as no command), init")
     args = parser.parse_args()
 
     if args.verbose:
         logging.root.setLevel(logging.DEBUG)
 
-    validate_runbook(args.runbook)
-    runbook = Runbook('runbook', args.runbook)
+    validate_command(args.command)
 
-    validate_roles(runbook, args.roles)
-    roles = args.roles.split(',')
+    if args.command == 'init':
+        logging.info('Initializing runbook "' + args.runbook + '"')
 
-    logging.info('Provisioning with runbook "' + runbook.path + '"')
-    logging.info('Applying roles "' + '", "'.join(roles) + '"')
+        runbook = Runbook('runbook', args.runbook)
+        runbook.create_scaffolding()
 
-    Provisioner(
-        runbook,
-        roles
-    ).run()
+    elif args.command == 'provision':
+        validate_runbook(args.runbook)
+        runbook = Runbook('runbook', args.runbook)
+
+        validate_roles(runbook, args.roles)
+        roles = args.roles.split(',')
+
+        logging.info('Provisioning with runbook "' + runbook.path + '"')
+        logging.info('Applying roles "' + '", "'.join(roles) + '"')
+
+        Provisioner(
+            runbook,
+            roles
+        ).run()
 
 if __name__ == "__main__":
     main()
