@@ -1,12 +1,15 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 
+import argparse
 import logging
+import os
+import sys
 
 from prvsnlib.provisioner import Provisioner
+from prvsnlib.runbook import Runbook
 
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
-
 
 # logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 # fileHandler = logging.FileHandler("{0}/{1}.log".format(logPath, fileName))
@@ -15,12 +18,42 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 # logging.getLogger().addHandler(logging.StreamHandler())
 
 
+def validate_runbook(path):
+    if os.path.isdir(path):
+        return True
+    else:
+        logging.error('Argument "'+ path + '" is not a valid runbook path.')
+        sys.exit(1)
+
+def validate_roles(runbook, roles):
+    if not roles:
+        logging.error('No roles specified. Nothing to do.')
+        sys.exit(1)
+    for role in roles.split(','):
+        if role not in [r.name for r in runbook.roles]:
+            logging.error('Argument "' + role + '" is not a valid role in runbook.')
+            sys.exit(1)
+    return True
+
 def main():
-    print("hello main")
-    runbook = '/Users/arnaud/src/prvsn/tests/runbook/'
-    Provisioner(runbook, [
-        'secure'
-    ]).run()
+    parser = argparse.ArgumentParser(description='Simple machine provisioning tool.')
+    parser.add_argument('-b', '--runbook', action='store', default='.', help='Path to the runbook (default: .)')
+    parser.add_argument('-r', '--roles', action='store', default='', help='Roles to provision, comma-separated (default: none)')
+    args = parser.parse_args()
+
+    validate_runbook(args.runbook)
+    runbook = Runbook('runbook', args.runbook)
+
+    validate_roles(runbook, args.roles)
+    roles = args.roles.split(',')
+
+    logging.info('Provisioning with runbook "' + runbook.path + '"')
+    logging.info('Applying roles "' + '", "'.join(roles) + '"')
+
+    Provisioner(
+        runbook,
+        roles
+    ).run()
 
 if __name__ == "__main__":
     main()
