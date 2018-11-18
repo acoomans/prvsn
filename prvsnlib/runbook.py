@@ -36,7 +36,8 @@ class Runbook:
                     if os.path.isdir(file_path):
                         main_path = os.path.join(file_path, 'main.py')
                         if os.path.isfile(main_path):
-                            roles.append(Role('role', file_path))
+                            role = Role(file, file_path)
+                            roles.append(role)
             self._roles = roles
 
         return self._roles
