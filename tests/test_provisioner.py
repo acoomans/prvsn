@@ -11,8 +11,6 @@ from prvsnlib.task import Task
 from prvsnlib.queue import Queue
 from prvsnlib.runbook import Runbook
 
-logging.basicConfig(format='%(message)s', level=logging.INFO)
-
 
 class TestTask(Task):
 

@@ -3,6 +3,8 @@ import logging
 import os
 import sys
 
+import prvsnlib.formatter
+
 from prvsnlib.queue import Queue
 from prvsnlib.role import Role
 from prvsnlib.task import Task
@@ -11,6 +13,7 @@ from prvsnlib.task import Task
 class Provisioner:
 
     def __init__(self, runbook, roles, queue=Queue(), extra_imports={}, share_locals=False):
+        logging.debug('Provisioner init.')
 
         self._runbook = runbook
         self._roles = roles
@@ -24,6 +27,7 @@ class Provisioner:
         self._run_locals = {}
 
     def builtin_imports(self):
+        logging.debug('Provisioner builtin imports.')
         return {
             'prvsnlib.tasks.command': [
                 'command',
@@ -48,6 +52,7 @@ class Provisioner:
         self._queue.append(task)
 
     def run_locals(self):
+        logging.debug('Provisioner creating run locals.')
         if not self._run_locals or not self._share_locals:
             run_locals = {}
             to_import = self.builtin_imports()
@@ -60,11 +65,13 @@ class Provisioner:
         return self._run_locals
 
     def run(self):
+        logging.debug('Provisioner run.')
         logging.header('Runbook ' + self._runbook.path)
         self.build_roles()
         self.run_tasks()
 
     def build_roles(self):
+        logging.debug('Provisioner building roles.')
         for role in self._roles:
             role = Role('role', os.path.join(self._runbook.path, 'roles', role))
             Task.setRole(role)
@@ -74,6 +81,7 @@ class Provisioner:
                 exec(code, self.run_locals())
 
     def run_tasks(self):
+        logging.debug('Provisioner running tasks.')
         for task in self._queue.tasks():
             logging.header(str(task))
 
