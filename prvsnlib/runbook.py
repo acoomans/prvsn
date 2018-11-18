@@ -31,7 +31,7 @@ class Runbook:
             roles = []
             roles_path = os.path.join(self._path, 'roles')
             if os.path.exists(roles_path):
-                for file in os.listdir():
+                for file in os.listdir(roles_path):
                     file_path = os.path.join(self._path, 'roles', file)
                     if os.path.isdir(file_path):
                         main_path = os.path.join(file_path, 'main.py')
