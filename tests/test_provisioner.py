@@ -13,26 +13,28 @@ from prvsnlib.runbook import Runbook
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
-cond = False
-
 
 class TestTask(Task):
 
-    def __init__(self, t):
+    def __init__(self,):
         Task.__init__(self)
-        self._t = t
 
     def run(self):
-        global cond
-        cond = self._t
+        with open('/tmp/qweqewqeqweqewdafasfsfd', 'w') as f:
+            f.write('hello')
         return '', ''
 
-def test(t):
-    TestTask(t)
+def test():
+    TestTask()
 
 
 class TestProvisioner(unittest.TestCase):
 
+    @property
+    def file(self):
+        return '/tmp/qweqewqeqweqewdafasfsfd'
+
+    @property
     def runbook(self):
         this_file = inspect.getfile(inspect.currentframe())
         this_dir = os.path.dirname(os.path.abspath(this_file))
@@ -40,25 +42,26 @@ class TestProvisioner(unittest.TestCase):
         return Runbook('', runbook)
 
     def setUp(self):
-        pass
+        if os.path.exists(self.file):
+            os.unlink(self.file)
 
     def testProvisioner(self):
 
         q = Queue()
         TestTask.setQueue(q)
 
-        self.assertFalse(cond, 'cond should be false; test set up incorrectly?')
+        self.assertFalse(os.path.exists(self.file), 'file should not exist; test set up incorrectly?')
 
         p = Provisioner(
-            self.runbook(),
+            self.runbook,
             ['provisioner'],
             queue=q,
             extra_imports={'tests.test_provisioner': ['test']}
         )
-        self.assertFalse(cond, 'cond should be false; cond changed before task is run?')
+        self.assertFalse(os.path.exists(self.file), 'cond should be false; cond changed before task is run?')
 
         p.run()
-        self.assertEqual(cond, 'hello', 'cond should be "hello"; cond not changed correctly in task run?')
+        self.assertTrue(os.path.exists(self.file), 'file should exist; cond not changed correctly in task run?')
 
     def testQueues(self):
         q = Queue()
@@ -66,7 +69,7 @@ class TestProvisioner(unittest.TestCase):
         self.assertEqual(len(q), 0)
 
         p = Provisioner(
-            self.runbook(),
+            self.runbook,
             ['queue'],
             queue=q,
             extra_imports={'tests.test_provisioner': ['test']}
