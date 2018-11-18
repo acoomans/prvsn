@@ -4,6 +4,7 @@ import os
 import unittest
 
 from prvsnlib.provisioner import Provisioner
+from prvsnlib.runbook import Runbook
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
@@ -40,7 +41,7 @@ class TestFileTask(unittest.TestCase):
         self.assertFalse(os.path.exists(self.path2()), 'file should not exist yet; test set up incorrectly?')
 
         p = Provisioner(
-            self.runbook(),
+            Runbook('', self.runbook),
             ['file'],
         ).run()
 

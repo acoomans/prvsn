@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from prvsnlib.provisioner import Provisioner
 from prvsnlib.task import Task
 from prvsnlib.queue import Queue
+from prvsnlib.runbook import Runbook
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
@@ -36,7 +37,7 @@ class TestProvisioner(unittest.TestCase):
         this_file = inspect.getfile(inspect.currentframe())
         this_dir = os.path.dirname(os.path.abspath(this_file))
         runbook = os.path.join(this_dir, 'runbook')
-        return runbook
+        return Runbook('', runbook)
 
     def setUp(self):
         pass

@@ -4,6 +4,7 @@ import os
 import unittest
 
 from prvsnlib.provisioner import Provisioner
+from prvsnlib.runbook import Runbook
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
@@ -14,7 +15,7 @@ class TestCommandTask(unittest.TestCase):
         this_file = inspect.getfile(inspect.currentframe())
         this_dir = os.path.dirname(os.path.abspath(this_file))
         runbook = os.path.join(this_dir, 'runbook')
-        return runbook
+        return Runbook('runbook', runbook)
 
     def path(self):
         return '/tmp/fjdhsalfhsajflkashdjfaskfhlsajkfasf'
