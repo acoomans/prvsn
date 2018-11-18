@@ -42,26 +42,16 @@ def validate_roles(runbook, roles):
             sys.exit(1)
     return True
 
-def validate_command(command):
-    if command == 'provision' or \
-            command == 'init':
-        return True
-    logging.error('Invalid command.')
-    sys.exit(1)
-
-
 def main():
     parser = argparse.ArgumentParser(description='Simple machine provisioning tool.')
     parser.add_argument('-b', '--runbook', action='store', default='.', help='Path to the runbook (default: .)')
     parser.add_argument('-r', '--roles', action='store', default='', help='Roles to provision, comma-separated (default: none)')
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
-    parser.add_argument('command', nargs='?', default='provision', help="Command: provision (default, same as no command), init")
+    parser.add_argument('command', nargs='?', default='provision', help="Command: provision(default), init, package")
     args = parser.parse_args()
 
     if args.verbose:
         logging.root.setLevel(logging.DEBUG)
-
-    validate_command(args.command)
 
     if args.command == 'init':
         logging.info('Initializing runbook "' + args.runbook + '"')
@@ -83,6 +73,9 @@ def main():
             runbook,
             roles
         ).run()
+    else:
+        logging.error('Invalid command.')
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
