@@ -10,4 +10,4 @@ script:
   - python setup.py test
   - python3 scripts/prvsn provision -b tests/runbook -r echo
   - python3 scripts/prvsn init -b tests/runbook2 -r echo
-  - python3 scripts/prvsn package -b tests/runbook -r echo -o tests/package && python3 tests/package.pyz
+  - python3 scripts/prvsn package -b tests/runbook -r echo -o tests/package.pyz && python3 tests/package.pyz
