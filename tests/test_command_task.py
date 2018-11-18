@@ -11,6 +11,7 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 class TestCommandTask(unittest.TestCase):
 
+    @property
     def runbook(self):
         this_file = inspect.getfile(inspect.currentframe())
         this_dir = os.path.dirname(os.path.abspath(this_file))
@@ -32,7 +33,7 @@ class TestCommandTask(unittest.TestCase):
         self.assertFalse(os.path.exists(self.path()), 'file should not exist yet; test set up incorrectly?')
 
         p = Provisioner(
-            self.runbook(),
+            self.runbook,
             ['command'],
         ).run()
 
