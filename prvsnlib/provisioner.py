@@ -82,6 +82,10 @@ class Provisioner:
 
     def run_tasks(self):
         logging.debug('Provisioner running tasks.')
+
+        if not self._queue.tasks:
+            logging.error('No tasks. Nothing to do.')
+
         for task in self._queue.tasks:
             logging.header(str(task))
 
