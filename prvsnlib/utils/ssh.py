@@ -3,6 +3,8 @@ import logging
 import pty
 import os
 
+from prvsnlib.utils.file import mkdir_p
+
 
 class Ssh:
     def __init__(self, remote='localhost', user=getpass.getuser(), password=None):
@@ -13,13 +15,33 @@ class Ssh:
     def __str__(self):
         return '<SSH ' + self._user + '@' + self._remote + '>'
 
-
     def command(self, commands):
-
-        commands = [
+        self.run([
             '/usr/bin/ssh',
             self._user + '@' + self._remote,
-        ] + commands
+        ] + commands)
+
+    def copyTo(self, src, dest):
+        self.run([
+            '/usr/bin/ssh',
+            self._user + '@' + self._remote,
+            'mkdir -p '+ os.path.dirname(dest),
+        ])
+        self.run([
+            '/usr/bin/scp',
+            src,
+            self._user + '@' + self._remote + ':' + dest,
+        ])
+
+    def copyFrom(self, src, dest):
+        mkdir_p(os.path.dirname(dest))
+        self.run([
+            '/usr/bin/scp',
+            self._user + '@' + self._remote + ':' + src,
+            dest,
+        ])
+
+    def run(self, commands):
         logging.debug('Running "' + ' '.join(commands) + '"')
 
         pid, child_fd = pty.fork()
@@ -58,16 +80,16 @@ class Ssh:
                 os.write(child_fd, password.encode('utf-8') + b'\n')
 
             elif r:
-                if password_attempted and password and b'uthentication fail' not in lower:
-                    logging.debug('SSH authenticated')
-                    self._password = password
-
                 output.append(r.decode('utf-8'))
 
             if wret:
                 err = '\n'.join(output)
                 logging.error(err)
                 return '', err
+
+            if password_attempted and password and b'uthentication fail' not in lower:
+                logging.debug('SSH authenticated')
+                self._password = password
 
         out = ''.join(output)
         logging.debug('SSH command output:\n' + out)
