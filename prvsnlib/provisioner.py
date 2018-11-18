@@ -3,10 +3,7 @@ import logging
 import os
 import sys
 
-from prvsnlib.utils.colors import Colors
-
 from prvsnlib.queue import Queue
-from prvsnlib.runbook import Runbook
 from prvsnlib.role import Role
 from prvsnlib.task import Task
 
@@ -63,7 +60,7 @@ class Provisioner:
         return self._run_locals
 
     def run(self):
-        logging.info(Colors.HEADER + Colors.UNDERLINE + '# Runbook ' + self._runbook.path + Colors.END)
+        logging.header('Runbook ' + self._runbook.path)
         self.build_roles()
         self.run_tasks()
 
@@ -78,13 +75,13 @@ class Provisioner:
 
     def run_tasks(self):
         for task in self._queue.tasks():
-            logging.info(Colors.HEADER + '## ' + str(task) + Colors.END)
+            logging.header(str(task))
 
             out, err = task.run()
             if task.secure: logging.info('(secure: output omitted)')
             else: logging.info(out)
 
             if err:
-                if not task.secure: logging.info(Colors.FAIL + err + Colors.END)
-                logging.info(Colors.FAIL + 'Task failed.' + Colors.END)
+                if not task.secure: logging.error(err)
+                logging.error('Task failed.')
                 sys.exit(1)

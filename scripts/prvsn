@@ -5,11 +5,18 @@ import logging
 import os
 import sys
 
+from prvsnlib.formatter import Formatter
 from prvsnlib.provisioner import Provisioner
 from prvsnlib.runbook import Runbook
 
 
-logging.basicConfig(format='%(message)s', level=logging.INFO)
+logging.root.setLevel(logging.INFO)
+
+formatter = Formatter()
+hdlr = logging.StreamHandler(sys.stdout)
+hdlr.setFormatter(formatter)
+logging.root.addHandler(hdlr)
+
 
 # logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 # fileHandler = logging.FileHandler("{0}/{1}.log".format(logPath, fileName))
@@ -39,7 +46,11 @@ def main():
     parser = argparse.ArgumentParser(description='Simple machine provisioning tool.')
     parser.add_argument('-b', '--runbook', action='store', default='.', help='Path to the runbook (default: .)')
     parser.add_argument('-r', '--roles', action='store', default='', help='Roles to provision, comma-separated (default: none)')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
     args = parser.parse_args()
+
+    if args.verbose:
+        logging.root.setLevel(logging.DEBUG)
 
     validate_runbook(args.runbook)
     runbook = Runbook('runbook', args.runbook)
