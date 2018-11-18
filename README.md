@@ -25,7 +25,11 @@ Prvsn
 	python setup.py test
 
 	
-## Objectives
+## Motivation
+
+If you need a provisioning tool that scales, look at Chef, Puppet and others.
+
+The motivation for this tool is too keep track of configuration steps and being able to rebuild a small setup (e.g. a raspberry pi) quickly and with minimal effort.
 
 ### Goals
 
@@ -47,7 +51,7 @@ Large scale provisioning:
 
 - provision thousands or more machines
 - strict dependencies, complex dependency graph
-- external recipes/supermaket support
+- external recipes & supermarket/store support
 
 If those are your goals, have looks at Puppet or Chef or others.
 
