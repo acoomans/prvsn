@@ -76,8 +76,7 @@ class Packager:
         logging.info('Building package at "' + self._dest + '"')
         zipapp.create_archive(
             self._tmpdir,
-            target=self._dest,
-            compressed=True
+            target=self._dest
         )
         self.cleanup_package()
         logging.success('Packaged.')
