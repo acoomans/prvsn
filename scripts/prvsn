@@ -43,7 +43,7 @@ def main():
             runbook,
             roles=args.roles.split(','),
             dest=args.output,
-            tmpdir='/Users/arnaud/Desktop/tmp',
+            # tmpdir='/Users/arnaud/Desktop/tmp',
         ).build_package()
 
     elif args.command == 'provision':
