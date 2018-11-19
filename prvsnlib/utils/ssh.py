@@ -79,7 +79,7 @@ class Ssh:
                 if self._password:
                     password = self._password
                 else:
-                    password = getpass.getpass()
+                    password = getpass.getpass(prompt='Password for user "'+self._user+'": ')
                     password_attempted = True
 
                 logging.debug('Sending SSH password')
