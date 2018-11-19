@@ -87,7 +87,9 @@ class Packager:
         )
 
         self.cleanup_package()
+
         logging.success('Packaged.')
+        return self._dest
 
     def write_package_main(self, path):
         file = os.path.join(path, '__main__.py')
