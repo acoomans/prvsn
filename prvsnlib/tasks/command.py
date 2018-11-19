@@ -1,3 +1,5 @@
+import getpass
+
 from prvsnlib.utils.run import run
 from ..task import Task
 
@@ -8,8 +10,8 @@ class CommandAction:
 
 class CommandTask(Task):
 
-    def __init__(self, interpreter, cmd, action, secure):
-        Task.__init__(self, secure)
+    def __init__(self, interpreter, cmd, action=CommandAction.RUN, **kwargs):
+        Task.__init__(self, **kwargs)
         self._interpreter = interpreter
         self._cmd = cmd
         self._action = action
@@ -18,7 +20,11 @@ class CommandTask(Task):
         return 'Run "' + self._interpreter[0] + '" command'
 
     def run(self):
-        cmd, out, ret, err = run(self._interpreter, input=self._cmd)
+        user_cmd = []
+        if self.user and self.user != getpass.getuser():
+            user_cmd = ['sudo', '-u', self.user]
+
+        cmd, out, ret, err = run(user_cmd + self._interpreter, input=self._cmd)
         cmd = cmd + '\n'
         if err:
             return cmd, err
@@ -27,11 +33,11 @@ class CommandTask(Task):
         return cmd+out, ''
 
 
-def command(interpreter, cmd, action=CommandAction.RUN, secure=False):
-    CommandTask(interpreter, cmd, action, secure)
+def command(*args, **kwargs):
+    CommandTask(*args, **kwargs)
 
-def bash(cmd, action=CommandAction.RUN, secure=False):
-    CommandTask(['bash', '-e'], cmd, action, secure)
+def bash(*args, **kwargs):
+    CommandTask(['bash', '-e'], *args, **kwargs)
 
-def ruby(cmd, action=CommandAction.RUN, secure=False):
-    CommandTask(['ruby'], cmd, action, secure)
+def ruby(*args, **kwargs):
+    CommandTask(['ruby'], *args, **kwargs)
