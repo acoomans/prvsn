@@ -1,3 +1,4 @@
+import getpass
 import subprocess
 
 from prvsnlib.utils.run import run
@@ -34,8 +35,8 @@ class PackageTask(Task):
                 pass
         return cls._packageClass(*args, **kwargs)
 
-    def __init__(self, name='', action=PackageAction.INSTALL, secure=False):
-        Task.__init__(self, secure)
+    def __init__(self, name='', action=PackageAction.INSTALL, **kwargs):
+        Task.__init__(self, **kwargs)
         self._name = name.split()
         self._action = action
 
@@ -56,15 +57,19 @@ class PackageTask(Task):
 
 class HomebrewPackageTask(PackageTask):
     def run(self):
+        user_cmd = []
+        if self.user and self.user != getpass.getuser():
+            user_cmd = ['sudo', '-u', self.user]
+
         cmd, out, ret, err = '', '', '', ''
         if self._action == PackageAction.UPDATE:
-            cmd, out, ret, err = run(['brew', 'update'])
+            cmd, out, ret, err = run(user_cmd + ['brew', 'update'])
         elif self._action == PackageAction.UPGRADE:
-            cmd, out, ret, err = run(['brew', 'upgrade'] + self._name)
+            cmd, out, ret, err = run(user_cmd + ['brew', 'upgrade'] + self._name)
         elif self._action == PackageAction.INSTALL:
-            cmd, out, ret, err = run(['brew', 'install'] + self._name)
+            cmd, out, ret, err = run(user_cmd + ['brew', 'install'] + self._name)
         elif self._action == PackageAction.REMOVE:
-            cmd, out, ret, err = run(['brew', 'uninstall'] + self._name)
+            cmd, out, ret, err = run(user_cmd + ['brew', 'uninstall'] + self._name)
         if err:
             return cmd, err
         if ret:
