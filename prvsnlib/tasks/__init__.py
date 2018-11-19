@@ -8,6 +8,11 @@ from .file import (
 file,
 )
 
+from .hostname import (
+hostname,
+)
+
+
 from .kernel import (
 module,
 )
