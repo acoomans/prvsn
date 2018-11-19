@@ -8,7 +8,12 @@ Prvsn
 [![Pypi license](http://img.shields.io/pypi/l/prvsn.svg)](https://pypi.python.org/pypi/prvsn)
 ![Python 2](http://img.shields.io/badge/python-2-blue.svg)
 ![Python 3](http://img.shields.io/badge/python-3-blue.svg)
-	
+
+![Screenshot](documentation/screenshot.png)
+
+- provisioning of local machine
+- provisioning of remote machine over ssh
+
 ## Motivation
 
 The motivation for this tool is too keep track of configuration steps and being able to rebuild a small setup (e.g. a raspberry pi) quickly and with minimal effort.
@@ -156,11 +161,11 @@ If multiple managers are present, it is possible to explicitly specify which to 
 
 Creates the hierarchy for a new runbook.
 
-    prvsn init -b path/to/runbook -r role1,role2
+    prvsn init -b path/to/runbook
 
 #### provision
 
-Default command. Provisions the machine `prvsn` runs on.
+Default command if no host is specified. Provisions the machine `prvsn` runs on.
 
     prvsn provision -b path/to/runbook -r role1,role2
 
@@ -172,9 +177,9 @@ or alternatively, if running from the runbook directory:
 
 #### package
 
-Creates an executable package with the runbook and the roles.
+Creates an executable package with the runbook and the roles. The default package name is `package.pyz`.
 
-    prvsn package -b path/to/runbook -r role1,role2 -o mypackage
+    prvsn package -b path/to/runbook -r role1,role2 -o mypackage.pyz
 
 The package can then be run individually:
 
@@ -182,7 +187,7 @@ The package can then be run individually:
 
 #### remote
 
-Provision a remote host by:
+Default command if a host is specified. Provision a remote host by:
 
 1. creating a package
 2. sending the package over ssh
