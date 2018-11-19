@@ -9,6 +9,10 @@ script:
   - python -m unittest discover
   - python setup.py test
   - python --version
-  - scripts/prvsn provision -b tests/runbook -r echo
-  - scripts/prvsn init -b tests/runbook2 -r echo
-  - scripts/prvsn package -b tests/runbook -r echo -o tests/package.pyz && python tests/package.pyz
+  - python setup.py develop
+  - prvsn init -b runbook && test -f runbook/roles/base/main.py
+  - prvsn -b ./runbook -r base | grep Hello
+  - prvsn provision -b ./runbook -r base | grep Hello
+  - prvsn package -b ./runbook -r base && test -f package.pyz
+  - prvsn package -b ./runbook -r base -o package2.pyz && test -f package2.pyz
+  - python package.pyz | grep Hello
