@@ -1,5 +1,6 @@
 import getpass
 import importlib
+import inspect
 import logging
 import os
 import sys
@@ -30,23 +31,7 @@ class Provisioner:
     def builtin_imports(self):
         logging.debug('Provisioner builtin imports.')
         return {
-            'prvsnlib.tasks.command': [
-                'command',
-                'bash',
-                'ruby',
-            ],
-            'prvsnlib.tasks.file': [
-                'file',
-            ],
-            'prvsnlib.tasks.kernel': [
-                'module',
-            ],
-            'prvsnlib.tasks.package': [
-                'package',
-                'homebrew_package',
-                'apt_package',
-                'yum_package',
-            ],
+            'prvsnlib.tasks': ['*'],
         }
 
     def add_task(self, task):
@@ -61,7 +46,10 @@ class Provisioner:
             for module_name, symbols in to_import.items():
                 module = importlib.import_module(module_name)
                 for symbol in symbols:
-                    run_locals[symbol] = getattr(module, symbol)
+                    if symbol == '*':
+                        run_locals.update(module.__dict__)
+                    else:
+                        run_locals[symbol] = getattr(module, symbol)
             self._run_locals = run_locals
         return self._run_locals
 
