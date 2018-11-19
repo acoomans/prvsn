@@ -6,7 +6,7 @@ import logging
 import os
 import sys
 
-dir = os.path.dirname(__file__)
+dir = os.path.split(os.path.dirname(__file__))[-1]
 if dir == 'scripts':
     sys.path.append(os.path.join(dir, '..'))
 
