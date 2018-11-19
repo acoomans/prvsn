@@ -47,16 +47,19 @@ If those are your goals, have a look at Puppet or Chef or others.
 
 ### Install
 
+From PyPi:
+
+    pip install prvsn
+   
+From Github:
+
+    git clone git@github.com:acoomans/prvsn.git
+    cd prvsn
 	python setup.py install
 
-### Developing
+Or for development:
 
 	python setup.py develop
-	python setup.py develop --uninstall
-
-### Running tests
-
-	python setup.py test
 
 
 ## Usage
