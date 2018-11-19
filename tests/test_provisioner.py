@@ -54,7 +54,8 @@ class TestProvisioner(unittest.TestCase):
             self.runbook,
             ['provisioner'],
             queue=q,
-            extra_imports={'tests.test_provisioner': ['test']}
+            extra_imports={'tests.test_provisioner': ['test']},
+            no_root=True,
         )
         self.assertFalse(os.path.exists(self.file), 'cond should be false; cond changed before task is run?')
 
@@ -70,7 +71,8 @@ class TestProvisioner(unittest.TestCase):
             self.runbook,
             ['queue'],
             queue=q,
-            extra_imports={'tests.test_provisioner': ['test']}
+            extra_imports={'tests.test_provisioner': ['test']},
+            no_root=True,
         ).run()
 
         self.assertEqual(len(q), 2)

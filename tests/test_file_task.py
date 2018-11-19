@@ -46,6 +46,7 @@ class TestFileTask(unittest.TestCase):
         p = Provisioner(
             Runbook('', self.runbook),
             ['file'],
+            no_root=True,
         ).run()
 
         self.assertTrue(os.path.exists(self.path1))
