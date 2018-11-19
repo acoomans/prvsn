@@ -86,12 +86,12 @@ def main():
 
         logging.header('Remotely executing package')
         out, err = ssh.command(['python', dest])
-        if err:
-            for line in err.splitlines():
-                logging.error(line)
-        else:
-            for line in out.splitlines():
-                logging.info(line)
+        # if err:
+        #     for line in err.splitlines():
+        #         logging.error(line)
+        # else:
+        #     for line in out.splitlines():
+        #         logging.info(line)
 
     else:
         logging.error('Invalid command.')
