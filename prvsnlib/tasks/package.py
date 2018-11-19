@@ -34,20 +34,20 @@ class PackageTask(Task):
                 pass
         return cls._packageClass(*args, **kwargs)
 
-    def __init__(self, package_name, action, secure):
+    def __init__(self, name='', action=PackageAction.INSTALL, secure=False):
         Task.__init__(self, secure)
-        self._package_name = package_name
+        self._name = name.split()
         self._action = action
 
     def __str__(self):
         if self._action == PackageAction.INSTALL:
-            return 'Install package "' + self._package_name + '".'
+            return 'Install package'
         elif self._action == PackageAction.REMOVE:
-            return 'Remove package "' + self._package_name + '".'
+            return 'Remove package'
         elif self._action == PackageAction.UPDATE:
-            return 'Update packages list.'
+            return 'Update packages list'
         elif self._action == PackageAction.UPGRADE:
-            return 'Upgrade all packages.'
+            return 'Upgrade all packages'
         return 'Package action "' + str(self._action) + '" not implemented.'
 
     def run(self):
@@ -56,14 +56,15 @@ class PackageTask(Task):
 
 class HomebrewPackageTask(PackageTask):
     def run(self):
+        cmd, out, ret, err = '', '', '', ''
         if self._action == PackageAction.UPDATE:
             cmd, out, ret, err = run(['brew', 'update'])
         elif self._action == PackageAction.UPGRADE:
-            cmd, out, ret, err = run(['brew', 'upgrade', self._package_name])
+            cmd, out, ret, err = run(['brew', 'upgrade'] + self._name)
         elif self._action == PackageAction.INSTALL:
-            cmd, out, ret, err = run(['brew', 'install', self._package_name])
+            cmd, out, ret, err = run(['brew', 'install'] + self._name)
         elif self._action == PackageAction.REMOVE:
-            cmd, out, ret, err = run(['brew', 'uninstall', self._package_name])
+            cmd, out, ret, err = run(['brew', 'uninstall'] + self._name)
         if err:
             return cmd, err
         if ret:
@@ -73,14 +74,15 @@ class HomebrewPackageTask(PackageTask):
 
 class AptPackageTask(PackageTask):
     def run(self):
+        cmd, out, ret, err = '', '', '', ''
         if self._action == PackageAction.UPDATE:
             cmd, out, ret, err = run(['apt-get', 'update'])
         elif self._action == PackageAction.UPGRADE:
-            cmd, out, ret, err = run(['apt-get', 'upgrade', '-y', '--no-install-recommends'])
+            cmd, out, ret, err = run(['apt-get', 'upgrade', '-y', '--no-install-recommends'] + self._name)
         elif self._action == PackageAction.INSTALL:
-            cmd, out, ret, err = run(['apt-get', 'install', '-y', '--no-install-recommends', self._package_name])
+            cmd, out, ret, err = run(['apt-get', 'install', '-y', '--no-install-recommends'] + self._name)
         elif self._action == PackageAction.REMOVE:
-            cmd, out, ret, err = run(['apt-get', 'remove', '-y', self._package_name])
+            cmd, out, ret, err = run(['apt-get', 'remove', '-y'] + self._name)
         if err:
             return cmd, err
         if ret:
@@ -90,14 +92,15 @@ class AptPackageTask(PackageTask):
 
 class YumPackageTask(PackageTask):
     def run(self):
+        cmd, out, ret, err = '', '', '', ''
         if self._action == PackageAction.UPDATE:
             cmd, out, ret, err = run(['yum', 'update'])
         elif self._action == PackageAction.UPGRADE:
-            cmd, out, ret, err = run(['yum', 'upgrade', '-y'])
+            cmd, out, ret, err = run(['yum', 'upgrade', '-y'] + self._name)
         elif self._action == PackageAction.INSTALL:
-            cmd, out, ret, err = run(['yum', 'install', '-y', self._package_name])
+            cmd, out, ret, err = run(['yum', 'install', '-y'] + self._name)
         elif self._action == PackageAction.REMOVE:
-            cmd, out, ret, err = run(['yum', 'remove', '-y', self._package_name])
+            cmd, out, ret, err = run(['yum', 'remove', '-y'] + self._name)
         if err:
             return cmd, err
         if ret:
