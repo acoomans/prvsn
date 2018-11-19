@@ -6,5 +6,5 @@ def zipdir(path, zip, filter=None):
         for root, dirs, files in os.walk(path):
             for file in files:
                 fp = os.path.join(root, file)
-                if filter and filter(fp):
+                if not filter or filter(fp):
                     zf.write(fp, arcname=os.path.relpath(fp, path))
