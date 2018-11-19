@@ -93,7 +93,7 @@ class Ssh:
                 logging.error(err)
                 return '', err
 
-            if password_attempted and password and b'uthentication fail' not in lower:
+            if password_attempted and password and lower and b'uthentication fail' not in lower:
                 logging.debug('SSH authenticated')
                 self._password = password
                 password_attempted = False
