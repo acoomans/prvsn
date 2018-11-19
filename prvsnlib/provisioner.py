@@ -1,3 +1,4 @@
+import getpass
 import importlib
 import logging
 import os
@@ -12,7 +13,7 @@ from prvsnlib.task import Task
 
 class Provisioner:
 
-    def __init__(self, runbook, roles, queue=Queue(), extra_imports={}, share_locals=False):
+    def __init__(self, runbook, roles, queue=Queue(), extra_imports={}, share_locals=False, no_root=False):
         logging.debug('Provisioner init.')
 
         self._runbook = runbook
@@ -25,6 +26,8 @@ class Provisioner:
         self._extra_imports = extra_imports
         self._share_locals = share_locals
         self._run_locals = {}
+
+        self._no_root = no_root
 
     def builtin_imports(self):
         logging.debug('Provisioner builtin imports.')
@@ -64,8 +67,15 @@ class Provisioner:
             self._run_locals = run_locals
         return self._run_locals
 
+    def user_check(self):
+        logging.info('Running Provisioner as user "' + getpass.getuser() + '"')
+        if getpass.getuser() != 'root' and not self._no_root:
+            logging.error('Provisioning is not running as root (add --no-root)')
+            sys.exit(1)
+
     def run(self):
-        logging.debug('Provisioner run.')
+        self.user_check()
+
         logging.header('Runbook ' + self._runbook.path)
         self.build_roles()
         self.run_tasks()
