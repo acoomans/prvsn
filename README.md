@@ -170,6 +170,13 @@ Adds and loads a module.
 Should automatically detect the package manager in presence. 
 If multiple managers are present, it is possible to explicitly specify which to use:
 
+    package('vim')
+	
+	[for package(p) in '''
+	vim
+	emacs
+	'''.split()]
+
 `homebrew_package` (mac only)
 
 `cask_package` (mac only)
@@ -178,14 +185,7 @@ If multiple managers are present, it is possible to explicitly specify which to 
 
 `yum_package`
 
-	package('vim')
-	
-	[for package(p) in '''
-	vim
-	emacs
-	'''.split()]
 
-	
 ### Command line
 
 #### init
