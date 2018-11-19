@@ -8,6 +8,10 @@ from .file import (
 file,
 )
 
+from .filetype import (
+file_handler
+)
+
 from .hostname import (
 hostname,
 )

@@ -112,6 +112,20 @@ Runs some code in bash. Hopefully this is never needed.
 Runs some code in ruby.
 
 
+### File Extension Handler Tasks
+
+`file_handler` (mac only)
+
+Associate an application with a file extension.
+
+    file_handler('.txt', 'com.macromates.TextMate')
+
+The application's identifier can be found with:
+
+    mdls -name kMDItemCFBundleIdentifier -r /Applications/TextMate.app
+
+
+
 #### File Tasks
 
 `file(source, file, replacements={})`:
