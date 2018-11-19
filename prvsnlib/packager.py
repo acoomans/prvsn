@@ -65,7 +65,7 @@ class Packager:
         logging.header('Packaging runbook "' + self._runbook._path + '"')
 
         if not self._dest:
-            self._dest = tempfile.mkstemp(suffix='.pyz')
+            fd, self._dest = tempfile.mkstemp(suffix='.pyz')
 
         dest_path = os.path.dirname(self._dest)
         if not os.path.exists(dest_path):
