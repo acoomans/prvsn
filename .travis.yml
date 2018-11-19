@@ -15,4 +15,4 @@ script:
   - prvsn provision -b ./runbook -r base | grep Hello
   - prvsn package -b ./runbook -r base && test -f package.pyz
   - prvsn package -b ./runbook -r base -o package2.pyz && test -f package2.pyz
-  - python package.pyz | grep Helloxx
+  - python package.pyz | grep Hello
