@@ -152,6 +152,12 @@ If multiple managers are present, it is possible to explicitly specify which to 
 	
 ### Command line
 
+#### init
+
+Creates the hierarchy for a new runbook.
+
+    prvsn init -b path/to/runbook -r role1,role2
+
 #### provision
 
 Default command. Provisions the machine `prvsn` runs on.
@@ -161,12 +167,8 @@ Default command. Provisions the machine `prvsn` runs on.
 or alternatively, if running from the runbook directory:
 
     prvsn -r role1,role2
-
-#### init
-
-Creates the hierarchy for a new runbook.
-
-    prvsn init -b path/to/runbook -r role1,role2
+    
+`--sudo` can be used to provision as root.
 
 #### package
 
@@ -186,6 +188,10 @@ Provision a remote host by:
 2. sending the package over ssh
 3. running the package over ssh
 
+example:
+
     prvsn remote -b path/to/runbook -r role1,role2 -n myhostname -u myuser
 
-     
+Additionally, ssh public key will be installed on the remote host (if no key is present, one is created). To disable this behavior, use '--no-copy-keys'.
+
+`--sudo` can be used to provision as root (on the remote host).
