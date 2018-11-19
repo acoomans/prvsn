@@ -93,7 +93,7 @@ class CaskPackageTask(PackageTask):
             cmd, out, ret, err = run(user_cmd + ['brew', 'cask', 'upgrade'] + self._name)
         elif self._action == PackageAction.INSTALL:
             cmd, out, ret, err = run(user_cmd + ['brew', 'cask', 'install'] + self._name)
-            ret = 0 if ret and 'already installed' in out else ret
+            ret = 0 if ret and 'there is already an App' in out else ret
         elif self._action == PackageAction.REMOVE:
             cmd, out, ret, err = run(user_cmd + ['brew', 'cask', 'uninstall'] + self._name)
         if err:
