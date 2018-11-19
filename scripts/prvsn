@@ -89,7 +89,7 @@ def main():
         logging.success('Sent.')
 
         logging.header('Remotely executing package')
-        out, err = ssh.command(['python', dest])
+        out, err = ssh.command(['python', dest], log_output=logging.info)
         if err:
             logging.error('Remotely executing package failed.')
             sys.exit(1)

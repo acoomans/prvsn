@@ -15,39 +15,47 @@ class Ssh:
     def __str__(self):
         return '<SSH ' + self._user + '@' + self._remote + '>'
 
-    def command(self, commands):
+    def command(self, commands, log_output=logging.debug):
         return self.run([
-            '/usr/bin/ssh',
-            self._user + '@' + self._remote,
-        ] + commands)
+                '/usr/bin/ssh',
+                self._user + '@' + self._remote,
+            ] + commands,
+            log_output=log_output
+        )
 
-    def copyTo(self, src, dest):
+    def copyTo(self, src, dest, log_output=logging.debug):
         out1 = ''
         err1 = ''
         if os.path.dirname(dest):
             out1, err1 = self.run([
-                '/usr/bin/ssh',
-                self._user + '@' + self._remote,
-                'mkdir -p '+ os.path.dirname(dest),
-            ])
+                    '/usr/bin/ssh',
+                    self._user + '@' + self._remote,
+                    'mkdir -p '+ os.path.dirname(dest),
+                ],
+                log_output=log_output
+            )
         if err1:
             return out1, err1
         out2, err2 = self.run([
-            '/usr/bin/scp',
-            src,
-            self._user + '@' + self._remote + ':' + dest,
-        ])
+                '/usr/bin/scp',
+                src,
+                self._user + '@' + self._remote + ':' + dest,
+            ],
+            log_output=log_output
+        )
         return out1 + '\n' + out1, err1 + err2
 
-    def copyFrom(self, src, dest):
+    def copyFrom(self, src, dest, log_output=logging.debug):
         mkdir_p(os.path.dirname(dest))
         return self.run([
-            '/usr/bin/scp',
-            self._user + '@' + self._remote + ':' + src,
-            dest,
-        ])
+                '/usr/bin/scp',
+                self._user + '@' + self._remote + ':' + src,
+                dest,
+            ],
+            log_output=log_output,
+        )
 
-    def run(self, commands):
+    def run(self, commands, log_output=logging.debug):
         logging.debug('Running "' + ' '.join(commands) + '"')
 
         pid, child_fd = pty.fork()
@@ -99,5 +107,5 @@ class Ssh:
                 password_attempted = False
 
         out = ''.join(output)
-        logging.debug('SSH command output:\n' + out)
+        log_output(out)
         return out, ''
