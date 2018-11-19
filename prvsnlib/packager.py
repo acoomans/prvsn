@@ -33,26 +33,33 @@ class Packager:
             import logging
             import os
             import tempfile
+            import shutil
             import zipfile 
         
             from prvsnlib.provisioner import Provisioner
             from prvsnlib.runbook import Runbook
             
             def extract_runbook():
+                d = tempfile.mkdtemp()
+                logging.debug('Extracting runbook to ' + d)
                 my_archive = os.path.dirname(__file__) 
                 zf = zipfile.ZipFile(my_archive)
-                dir = tempfile.mkdtemp()
-                zf.extractall(dir)
-                return dir
+                zf.extractall(d)
+                return d
+                
+            def delete_runbook(d):
+                logging.debug('Cleaning up runbook ' + d)
+                shutil.rmtree(d)
 
             def main():
                 logging.root.setLevel(logging.{loglevel})
 
-                dir = extract_runbook()
+                d = extract_runbook()
                 Provisioner(
-                    Runbook('runbook', os.path.join(dir, 'runbook')),
+                    Runbook('runbook', os.path.join(d, 'runbook')),
                     {roles},
                 ).run()
+                delete_runbook(d)
 
             if __name__ == "__main__":
                 main()
