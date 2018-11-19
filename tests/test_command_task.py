@@ -35,7 +35,6 @@ class TestCommandTask(unittest.TestCase):
         p = Provisioner(
             self.runbook,
             ['command'],
-            no_root=True,
         ).run()
 
         self.assertTrue(os.path.exists(self.path()))

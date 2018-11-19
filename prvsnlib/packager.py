@@ -11,14 +11,13 @@ from prvsnlib.utils.zip import zipdir
 
 class Packager:
 
-    def __init__(self, runbook, roles=[], tmpdir=None, dest=None, cleanup=True, verbose=False, no_root=False):
+    def __init__(self, runbook, roles=[], tmpdir=None, dest=None, cleanup=True, verbose=False):
         self._runbook = runbook
         self._roles = roles
         self._tmpdir = tmpdir
         self._dest = dest
         self._verbose = verbose
         self._cleanup = cleanup
-        self._no_root = no_root
 
     @property
     def prvsnlib_path(self):
@@ -53,14 +52,12 @@ class Packager:
                 Provisioner(
                     Runbook('runbook', os.path.join(dir, 'runbook')),
                     {roles},
-                    no_root={no_root},
                 ).run()
 
             if __name__ == "__main__":
                 main()
         ''').strip().format(
             roles=self._roles,
-            no_root=self._no_root,
             loglevel=('DEBUG' if self._verbose else 'INFO')
         )
 

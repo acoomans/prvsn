@@ -29,10 +29,10 @@ def main():
     parser.add_argument('-n', '--hostname', action='store', default='localhost', help='Remote hostname (default: localhost)')
     parser.add_argument('-o', '--output', action='store', help='Package output')
     parser.add_argument('-r', '--roles', action='store', default='', help='Roles to provision, comma-separated (default: none)')
+    parser.add_argument('-s', '--sudo', action='store_true', help='Run provisioning as root (default: logged in user)')
     parser.add_argument('-u', '--username', action='store', default=getpass.getuser(), help='Remote username (default: current user)')
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
 
-    parser.add_argument('--no-root', action='store_true', help='Do not warn if not running as root (default: warn)')
     parser.add_argument('--no-copy-keys', action='store_true', help='Do not copy public ssh keys to remote (default: copy)')
 
     parser.add_argument('command', nargs='?', default='provision', help="Command: provision(default), init, package, remote")
@@ -56,7 +56,6 @@ def main():
             runbook,
             roles=args.roles.split(','),
             dest=args.output,
-            no_root=args.no_root,
         ).build_package()
 
     elif args.command == 'provision':
@@ -68,7 +67,6 @@ def main():
         Provisioner(
             runbook,
             args.roles.split(','),
-            no_root=args.no_root,
         ).run()
     elif args.command == 'remote':
 
@@ -82,7 +80,6 @@ def main():
             runbook,
             roles=args.roles.split(','),
             dest=args.output,
-            no_root=args.no_root,
         ).build_package()
 
         ssh = Ssh(remote=args.hostname, user=args.username)
@@ -100,7 +97,7 @@ def main():
         logging.success('Sent.')
 
         logging.header('Remotely executing package on ' + ssh.remote)
-        out, err = ssh.command(['python', dest], log_output=logging.info, sudo=True)
+        out, err = ssh.command(['python', dest], log_output=logging.info, sudo=args.sudo)
         if err:
             logging.error('Remotely executing package failed.')
             sys.exit(1)
