@@ -23,11 +23,14 @@ class Task:
     def secure(self):
         return self._secure
 
-    def __init__(self, secure=False):
+    def __init__(self, secure=False, user=None):
         self.__class__._queue.append(self)
+
         self._runbook = self.__class__._runbook
         self._role = self.__class__._role
+
         self._secure = secure
+        self.user = user
 
     def run(self):
         out = 'No output'
