@@ -65,6 +65,7 @@ def main():
             runbook,
             roles=args.roles.split(','),
             dest=args.output,
+            verbose=args.verbose,
         ).build_package()
 
     elif args.command == 'provision':
@@ -97,6 +98,7 @@ def main():
             runbook,
             roles=args.roles.split(','),
             dest=args.output,
+            verbose=args.verbose,
         ).build_package()
 
         ssh = Ssh(remote=args.hostname, user=args.username)
