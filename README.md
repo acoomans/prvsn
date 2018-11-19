@@ -3,6 +3,8 @@ Prvsn
 
 `prvsn` is a simple provisioning tool.
 
+It can provision linux and mac, either locally or remotely. 
+
 [![Build](https://travis-ci.org/acoomans/prvsn.svg?branch=master)](https://travis-ci.org/acoomans/prvsn)
 [![Pypi version](http://img.shields.io/pypi/v/prvsn.svg)](https://pypi.python.org/pypi/prvsn)
 [![Pypi license](http://img.shields.io/pypi/l/prvsn.svg)](https://pypi.python.org/pypi/prvsn)
@@ -11,8 +13,6 @@ Prvsn
 
 ![Screenshot](documentation/screenshot.png)
 
-- provisioning of local machine
-- provisioning of remote machine over ssh
 
 ## Motivation
 
@@ -135,6 +135,12 @@ replacements rules can be specified, so the file acts as a template.
 		}
 	)
 
+### Hostname tasks
+
+`hostname`:
+
+    hostname('my_machine')
+
 #### Kernel Tasks
 
 `module(name)` (linux only):
@@ -150,13 +156,21 @@ Adds and loads a module.
 Should automatically detect the package manager in presence. 
 If multiple managers are present, it is possible to explicitly specify which to use:
 
-`homebrew_package`
+`homebrew_package` (mac only)
+
+`cask_package` (mac only)
 
 `apt_package`
 
 `yum_package`
 
 	package('vim')
+	
+	[for package(p) in '''
+	vim
+	emacs
+	'''.split()]
+
 	
 ### Command line
 
