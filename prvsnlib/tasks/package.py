@@ -68,6 +68,7 @@ class HomebrewPackageTask(PackageTask):
             cmd, out, ret, err = run(user_cmd + ['brew', 'upgrade'] + self._name)
         elif self._action == PackageAction.INSTALL:
             cmd, out, ret, err = run(user_cmd + ['brew', 'install'] + self._name)
+            ret = 0 if ret and 'already installed' in out else ret
         elif self._action == PackageAction.REMOVE:
             cmd, out, ret, err = run(user_cmd + ['brew', 'uninstall'] + self._name)
         if err:
