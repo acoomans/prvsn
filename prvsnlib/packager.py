@@ -75,15 +75,9 @@ class Packager:
 
         logging.info('Building package at "' + self._dest + '"')
 
-        def filter(path):
-            if path.endswith('pyc'):
-                return False
-            return True
-
         zipdir(
             self._tmpdir,
             self._dest,
-            filter=filter
         )
 
         self.cleanup_package()
