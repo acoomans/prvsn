@@ -17,12 +17,21 @@ class PackageTask(Task):
     @classmethod
     def package(cls, *args, **kwargs):
         if not cls._packageClass:
-            if subprocess.check_output(['which', 'brew']):
-                cls._packageClass = HomebrewPackageTask
-            elif subprocess.check_output(['which', 'apt-get']):
-                cls._packageClass = AptPackageTask
-            elif subprocess.check_output(['which', 'yum']):
-                cls._packageClass = YumPackageTask
+            try:
+                if subprocess.check_output(['which', 'brew']):
+                    cls._packageClass = HomebrewPackageTask
+            except:
+                pass
+            try:
+                if subprocess.check_output(['which', 'apt-get']):
+                    cls._packageClass = AptPackageTask
+            except:
+                pass
+            try:
+                if subprocess.check_output(['which', 'yum']):
+                    cls._packageClass = YumPackageTask
+            except:
+                pass
         return cls._packageClass(*args, **kwargs)
 
     def __init__(self, package_name, action, secure):
