@@ -3,10 +3,12 @@ import logging
 import pty
 import os
 
+from prvsnlib.utils.run import run
 from prvsnlib.utils.file import mkdir_p
 
 
 class Ssh:
+
     def __init__(self, remote='localhost', user=getpass.getuser(), password=None):
         self.hostname = remote
         self.username = user
@@ -22,11 +24,12 @@ class Ssh:
     def command(self, commands, log_output=logging.debug, sudo=False):
         commands_to_run = [
             '/usr/bin/ssh',
+            '-t',
             self.username + '@' + self.hostname,
         ]
 
         if sudo:
-            commands_to_run += ['sudo', '-p', 'sudo password: ']
+            commands_to_run += ['sudo', '-p "sudo password: "']
 
         commands_to_run += commands
 
@@ -141,6 +144,12 @@ class Ssh:
             if b'are you sure you want to continue connecting' in lower:
                 logging.debug('Adding host to known hosts')
                 os.write(child_fd, b'yes\n')
+
+            elif b'sudo password:' in lower:
+                password = getpass.getpass(prompt='Password for sudo: ')
+
+                logging.debug('Sending sudo password')
+                os.write(child_fd, password.encode('utf-8') + b'\n')
 
             elif b'password:' in lower:
                 if self._password:
