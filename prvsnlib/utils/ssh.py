@@ -16,26 +16,32 @@ class Ssh:
         return '<SSH ' + self._user + '@' + self._remote + '>'
 
     def command(self, commands):
-        self.run([
+        return self.run([
             '/usr/bin/ssh',
             self._user + '@' + self._remote,
         ] + commands)
 
     def copyTo(self, src, dest):
-        self.run([
-            '/usr/bin/ssh',
-            self._user + '@' + self._remote,
-            'mkdir -p '+ os.path.dirname(dest),
-        ])
-        self.run([
+        out1 = ''
+        err1 = ''
+        if os.path.dirname(dest):
+            out1, err1 = self.run([
+                '/usr/bin/ssh',
+                self._user + '@' + self._remote,
+                'mkdir -p '+ os.path.dirname(dest),
+            ])
+        if err1:
+            return out1, err1
+        out2, err2 = self.run([
             '/usr/bin/scp',
             src,
             self._user + '@' + self._remote + ':' + dest,
         ])
+        return out1 + '\n' + out1, err1 + '\n' + err2
 
     def copyFrom(self, src, dest):
         mkdir_p(os.path.dirname(dest))
-        self.run([
+        return self.run([
             '/usr/bin/scp',
             self._user + '@' + self._remote + ':' + src,
             dest,
@@ -80,7 +86,7 @@ class Ssh:
                 os.write(child_fd, password.encode('utf-8') + b'\n')
 
             elif r:
-                output.append(r.decode('utf-8'))
+                output.append(r.decode('utf-8')+'\n')
 
             if wret:
                 err = '\n'.join(output)
@@ -90,6 +96,7 @@ class Ssh:
             if password_attempted and password and b'uthentication fail' not in lower:
                 logging.debug('SSH authenticated')
                 self._password = password
+                password_attempted = False
 
         out = ''.join(output)
         logging.debug('SSH command output:\n' + out)
