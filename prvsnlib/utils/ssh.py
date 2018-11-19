@@ -8,18 +8,30 @@ from prvsnlib.utils.file import mkdir_p
 
 class Ssh:
     def __init__(self, remote='localhost', user=getpass.getuser(), password=None):
-        self._remote = remote
-        self._user = user
+        self.hostname = remote
+        self.username = user
         self._password = password
 
     def __str__(self):
-        return '<SSH ' + self._user + '@' + self._remote + '>'
+        return '<SSH ' + self.username + '@' + self.hostname + '>'
 
-    def command(self, commands, log_output=logging.debug):
-        return self.run([
-                '/usr/bin/ssh',
-                self._user + '@' + self._remote,
-            ] + commands,
+    @property
+    def remote(self):
+        return self.hostname + '@' + self.username
+
+    def command(self, commands, log_output=logging.debug, sudo=False):
+        commands_to_run = [
+            '/usr/bin/ssh',
+            self.username + '@' + self.hostname,
+        ]
+
+        if sudo:
+            commands_to_run += ['sudo', '-p', 'sudo password: ']
+
+        commands_to_run += commands
+
+        return self.run(
+            commands_to_run,
             log_output=log_output
         )
 
@@ -29,8 +41,8 @@ class Ssh:
         if os.path.dirname(dest):
             out1, err1 = self.run([
                     '/usr/bin/ssh',
-                    self._user + '@' + self._remote,
-                    'mkdir -p '+ os.path.dirname(dest),
+                self.username + '@' + self.hostname,
+                    'mkdir -p ' + os.path.dirname(dest),
                 ],
                 log_output=log_output
             )
@@ -39,7 +51,7 @@ class Ssh:
         out2, err2 = self.run([
                 '/usr/bin/scp',
                 src,
-                self._user + '@' + self._remote + ':' + dest,
+            self.username + '@' + self.hostname + ':' + dest,
             ],
             log_output=log_output
         )
@@ -49,7 +61,7 @@ class Ssh:
         mkdir_p(os.path.dirname(dest))
         return self.run([
                 '/usr/bin/scp',
-                self._user + '@' + self._remote + ':' + src,
+            self.username + '@' + self.hostname + ':' + src,
                 dest,
             ],
             log_output=log_output,
@@ -87,7 +99,7 @@ class Ssh:
                 if self._password:
                     password = self._password
                 else:
-                    password = getpass.getpass(prompt='Password for user "'+self._user+'": ')
+                    password = getpass.getpass(prompt='Password for user "' + self.username + '": ')
                     password_attempted = True
 
                 logging.debug('Sending SSH password')

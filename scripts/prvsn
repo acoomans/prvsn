@@ -87,15 +87,15 @@ def main():
         ssh = Ssh(remote=args.hostname, user=args.username)
         dest = 'package.pyz'
 
-        logging.header('Sending package')
+        logging.header('Sending package to ' + ssh.remote)
         out, err = ssh.copyTo(pkg, dest)
         if err:
             logging.error('Sending package failed.')
             sys.exit(1)
         logging.success('Sent.')
 
-        logging.header('Remotely executing package')
-        out, err = ssh.command(['python', dest], log_output=logging.info)
+        logging.header('Remotely executing package on ' + ssh.remote)
+        out, err = ssh.command(['python', dest], log_output=logging.info, sudo=True)
         if err:
             logging.error('Remotely executing package failed.')
             sys.exit(1)
