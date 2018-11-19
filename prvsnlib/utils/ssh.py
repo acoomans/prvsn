@@ -67,6 +67,53 @@ class Ssh:
             log_output=log_output,
         )
 
+    @property
+    def ssh_config_dir(self):
+        home = os.path.expanduser("~")
+        return os.path.join(home, '.ssh')
+
+    @property
+    def key_file(self):
+        return os.path.join(self.ssh_config_dir, 'id_rsa')
+
+    @property
+    def public_key_file(self):
+        return self.key_file + '.pub'
+
+    def create_public_key_file_if_not_exist(self, key_file=None):
+        if not key_file: key_file = self.key_file
+        public_key_file = key_file + '.pub'
+        if not os.path.exists(public_key_file):
+            config_dir = os.path.dirname(key_file)
+            mkdir_p(config_dir)
+            os.chmod(config_dir, 0o700)
+            logging.info('No public key found; creating a new key at "' + self.public_key_file + '"')
+            run([
+                'ssh-keygen',
+                '-t', 'rsa',
+                '-b', '4096',
+                '-f', key_file,
+                '-N', ''
+            ])
+
+    def copy_public_keys(self):
+        logging.header('Copying public keys to ' + self.hostname)
+
+        self.create_public_key_file_if_not_exist()
+
+        out, err = self.run([
+                '/usr/bin/ssh-copy-id',
+                self.username + '@' + self.hostname,
+            ],
+        )
+        if 'skipped because they already exist' in out:
+            logging.success('Public keys already present. Skipping.')
+        elif err:
+            logging.error('Could not copy public key')
+        else:
+            logging.success('Public keys copied.')
+        return out, err
+
     def run(self, commands, log_output=logging.debug):
         logging.debug('Running "' + ' '.join(commands) + '"')
 

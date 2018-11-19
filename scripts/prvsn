@@ -32,7 +32,8 @@ def main():
     parser.add_argument('-u', '--username', action='store', default=getpass.getuser(), help='Remote username (default: current user)')
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
 
-    parser.add_argument('--no-root', action='store_true', help='Do not warn if not running as root')
+    parser.add_argument('--no-root', action='store_true', help='Do not warn if not running as root (default: warn)')
+    parser.add_argument('--no-copy-keys', action='store_true', help='Do not copy public ssh keys to remote (default: copy)')
 
     parser.add_argument('command', nargs='?', default='provision', help="Command: provision(default), init, package, remote")
     args = parser.parse_args()
@@ -85,6 +86,10 @@ def main():
         ).build_package()
 
         ssh = Ssh(remote=args.hostname, user=args.username)
+
+        if not args.no_copy_keys:
+            ssh.copy_public_keys()
+
         dest = 'package.pyz'
 
         logging.header('Sending package to ' + ssh.remote)
