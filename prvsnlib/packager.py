@@ -73,7 +73,7 @@ class Packager:
 
         self.prepare_package()
 
-        logging.info('Building package at "' + self._dest + '"')
+        logging.debug('Building package at "' + self._dest + '"')
 
         zipdir(
             self._tmpdir,
@@ -87,7 +87,7 @@ class Packager:
 
     def write_package_main(self, path):
         file = os.path.join(path, '__main__.py')
-        logging.info('Writing package main file at "' + file + '"')
+        logging.debug('Writing package main file at "' + file + '"')
 
         with open(file, 'w') as f:
             f.write(self.package_main_contents)
@@ -100,7 +100,7 @@ class Packager:
         if not os.path.exists(self._tmpdir):
             mkdir_p(self._tmpdir)
 
-        logging.info('Preparing package at "' + self._tmpdir + '"')
+        logging.debug('Preparing package at "' + self._tmpdir + '"')
 
         shutil.copytree(
             self.prvsnlib_path,
@@ -115,5 +115,5 @@ class Packager:
 
     def cleanup_package(self):
         if self._cleanup:
-            logging.info('Cleaning up package temp dir')
+            logging.debug('Cleaning up package temp dir')
             shutil.rmtree(self._tmpdir)
