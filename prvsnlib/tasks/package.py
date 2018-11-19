@@ -105,17 +105,17 @@ class YumPackageTask(PackageTask):
         return cmd+'\n'+out, ''
 
 
-def package(d, action=PackageAction.INSTALL, secure=False):
-    PackageTask.package(d, action, secure)
+def package(*args, **kwargs):
+    PackageTask.package(*args, **kwargs)
 
 
-def homebrew_package(d, action=PackageAction.INSTALL, secure=False):
-    HomebrewPackageTask(d, action, secure)
+def homebrew_package(*args, **kwargs):
+    HomebrewPackageTask(*args, **kwargs)
 
 
-def apt_package(d, action=PackageAction.INSTALL, secure=False):
-    AptPackageTask(d, action, secure)
+def apt_package(*args, **kwargs):
+    AptPackageTask(*args, **kwargs)
 
 
-def yum_package(d, action=PackageAction.INSTALL, secure=False):
-    YumPackageTask(d, action, secure)
+def yum_package(*args, **kwargs):
+    YumPackageTask(*args, **kwargs)
