@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import argparse
+import getpass
 import logging
 import os
 import sys
@@ -14,16 +15,23 @@ from prvsnlib.provisioner import Provisioner
 from prvsnlib.runbook import Runbook
 from prvsnlib.utils.ssh import Ssh
 
-from prvsnlib.utils.validation import validate_runbook, validate_roles
+from prvsnlib.utils.validation import (
+    validate_runbook,
+    validate_roles,
+    validate_hostname,
+    validate_username,
+)
 
 
 def main():
     parser = argparse.ArgumentParser(description='Simple machine provisioning tool.')
     parser.add_argument('-b', '--runbook', action='store', default='.', help='Path to the runbook (default: .)')
+    parser.add_argument('-n', '--hostname', action='store', default='localhost', help='Remote hostname (default: localhost)')
     parser.add_argument('-o', '--output', action='store', help='Package output')
     parser.add_argument('-r', '--roles', action='store', default='', help='Roles to provision, comma-separated (default: none)')
+    parser.add_argument('-u', '--username', action='store', default=getpass.getuser(), help='Remote username (default: current user)')
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
-    parser.add_argument('command', nargs='?', default='provision', help="Command: provision(default), init, package")
+    parser.add_argument('command', nargs='?', default='provision', help="Command: provision(default), init, package, remote")
     args = parser.parse_args()
 
     if args.verbose:
@@ -62,6 +70,7 @@ def main():
 
         validate_runbook(runbook)
         validate_roles(runbook, args.roles)
+        validate_hostname(args.hostname)
 
         pkg = Packager(
             runbook,
@@ -69,7 +78,7 @@ def main():
             dest=args.output,
         ).build_package()
 
-        ssh = Ssh()
+        ssh = Ssh(remote=args.hostname, user=args.username)
         dest = 'package.pyz'
 
         logging.header('Sending package')

@@ -29,3 +29,15 @@ def validate_roles(runbook, roles):
         if role not in [r.name for r in runbook.roles]:
             log_error_and_exit('Argument "' + role + '" is not a valid role in runbook.')
     return True
+
+
+def validate_username(username):
+    if not username or not type(username) is str:
+        log_error_and_exit('Argument "' + username + '" is not a valid username.')
+    return True
+
+
+def validate_hostname(hostname):
+    if not hostname or not type(hostname) is str:
+        log_error_and_exit('Argument "' + hostname + '" is not a valid hostname.')
+    return True
