@@ -41,7 +41,7 @@ class Ssh:
         if os.path.dirname(dest):
             out1, err1 = self.run([
                     '/usr/bin/ssh',
-                self.username + '@' + self.hostname,
+                    self.username + '@' + self.hostname,
                     'mkdir -p ' + os.path.dirname(dest),
                 ],
                 log_output=log_output
@@ -51,7 +51,7 @@ class Ssh:
         out2, err2 = self.run([
                 '/usr/bin/scp',
                 src,
-            self.username + '@' + self.hostname + ':' + dest,
+                self.username + '@' + self.hostname + ':' + dest,
             ],
             log_output=log_output
         )
@@ -61,7 +61,7 @@ class Ssh:
         mkdir_p(os.path.dirname(dest))
         return self.run([
                 '/usr/bin/scp',
-            self.username + '@' + self.hostname + ':' + src,
+                self.username + '@' + self.hostname + ':' + src,
                 dest,
             ],
             log_output=log_output,
