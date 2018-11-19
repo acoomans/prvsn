@@ -22,9 +22,10 @@ module,
 )
 
 from .package import (
-package,
 apt_package,
-homebrew_package,
 cask_package,
+homebrew_package,
+mac_app_store,
+package,
 yum_package,
 )

@@ -102,6 +102,29 @@ class CaskPackageTask(PackageTask):
             return cmd, out
         return cmd + '\n' + out, ''
 
+class MasPackageTask(PackageTask):
+
+    def run(self):
+        user_cmd = []
+        if self.user and self.user != getpass.getuser():
+            user_cmd = ['sudo', '-u', self.user]
+
+        cmd, out, ret, err = '', '', '', ''
+        if self._action == PackageAction.UPDATE:
+            cmd, out, ret, err = '', 'No update function for app store. Ignoring.', 0, ''
+        elif self._action == PackageAction.UPGRADE:
+            cmd, out, ret, err = run(user_cmd + ['mas', 'upgrade'] + self._name)
+        elif self._action == PackageAction.INSTALL:
+            cmd, out, ret, err = run(user_cmd + ['mas', 'install'] + self._name)
+            ret = 0 if ret and 'there is already an App' in out else ret
+        elif self._action == PackageAction.REMOVE:
+            cmd, out, ret, err = '', '', 1, 'No remove function for app store.'
+        if err:
+            return cmd, err
+        if ret:
+            return cmd, out
+        return cmd + '\n' + out, ''
+
 
 class AptPackageTask(PackageTask):
     def run(self):
@@ -141,6 +164,10 @@ class YumPackageTask(PackageTask):
 
 def package(*args, **kwargs):
     PackageTask.package(*args, **kwargs)
+
+
+def mac_app_store(*args, **kwargs):
+    MasPackageTask(*args, **kwargs)
 
 
 def homebrew_package(*args, **kwargs):

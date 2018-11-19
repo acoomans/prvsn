@@ -181,6 +181,15 @@ If multiple managers are present, it is possible to explicitly specify which to 
 
 `cask_package` (mac only)
 
+`mac_app_store` (mac only)
+
+    mac_app_store('937984704')
+
+Application identifiers can be found with:
+    
+    mas search app_name
+
+
 `apt_package`
 
 `yum_package`
