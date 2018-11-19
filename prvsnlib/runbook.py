@@ -60,26 +60,26 @@ class Runbook:
             data = textwrap.dedent('''
                 # This is a template for a role
 
-                bash('echo "hello"')
+                bash('echo "Hello World!"')
 
-                package('pkill')
-
-                file(
-                    'yo.conf', 
-                    '/etc/yo.conf', 
-                    replacements={
-                        'USERNAME': 'arnaud'
-                    },
-                )
+                # package('my_package')
+                
+                # file(
+                #   'example.conf', 
+                #   '/etc/example.conf', 
+                #   replacements={
+                #       'old_string': 'new_string'
+                #   }
+                # )
+                
             ''').strip()
             f.write(data)
 
         files_base_roles_path = os.path.join(base_roles_path, 'files')
         mkdir_p(files_base_roles_path)
 
-        with open(os.path.join(files_base_roles_path, 'yo.conf'), 'w') as f:
+        with open(os.path.join(files_base_roles_path, 'example.conf'), 'w') as f:
             data = textwrap.dedent('''
-                username = USERNAME
-                dob = 01/01/1970
+                my_variable = old_string
             ''')
             f.write(data)
