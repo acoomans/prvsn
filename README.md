@@ -180,4 +180,12 @@ The package can then be run individually:
 
 #### remote
 
-TODO
+Provision a remote host by:
+
+1. creating a package
+2. sending the package over ssh
+3. running the package over ssh
+
+    prvsn remote -b path/to/runbook -r role1,role2 -n myhostname -u myuser
+
+     
