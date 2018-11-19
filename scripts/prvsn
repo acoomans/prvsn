@@ -72,7 +72,7 @@ def main():
         if args.sudo:
             if os.geteuid() != 0:
                 if sys.stdout.isatty():
-                    os.execvp('sudo', ['sudo', '-p "sudo password"'] + sys.argv)
+                    os.execvp('sudo', ['sudo', '-p', 'sudo password:'] + sys.argv)
                 else:
                     logging.warning('Cannot sudo; not a tty. Running as user "' + getpass.getuser() + '"')
 
