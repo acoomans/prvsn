@@ -37,7 +37,7 @@ class Ssh:
             src,
             self._user + '@' + self._remote + ':' + dest,
         ])
-        return out1 + '\n' + out1, err1 + '\n' + err2
+        return out1 + '\n' + out1, err1 + err2
 
     def copyFrom(self, src, dest):
         mkdir_p(os.path.dirname(dest))
