@@ -30,7 +30,8 @@ class Provisioner:
         self._share_locals = share_locals
         self._run_locals = {}
 
-    def builtin_imports(self):
+    @staticmethod
+    def builtin_imports():
         logging.debug('Provisioner builtin imports.')
         return {
             'prvsnlib.tasks': ['*'],
@@ -55,7 +56,8 @@ class Provisioner:
             self._run_locals = run_locals
         return self._run_locals
 
-    def user_check(self):
+    @staticmethod
+    def user_check():
         logging.info('Running Provisioner as user "' + getpass.getuser() + '"')
         if getpass.getuser() != 'root':
             logging.warning('Provisioning is not running as root (add --sudo)')

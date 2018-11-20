@@ -18,7 +18,8 @@ class TestCommandTask(unittest.TestCase):
         runbook = os.path.join(this_dir, 'runbook')
         return Runbook('runbook', runbook)
 
-    def path(self):
+    @staticmethod
+    def path():
         return '/tmp/fjdhsalfhsajflkashdjfaskfhlsajkfasf'
 
     def setUp(self):
