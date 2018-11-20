@@ -23,8 +23,8 @@ class Provisioner:
         self._roles = roles
 
         self._queue = queue
-        Task.setQueue(queue)
-        Task.setRunBook(self._runbook)
+        Task.set_queue(queue)
+        Task.set_runBook(self._runbook)
 
         self._extra_imports = extra_imports
         self._share_locals = share_locals
@@ -73,7 +73,7 @@ class Provisioner:
         logging.debug('Provisioner building roles.')
         for role in self._roles:
             role = Role('role', os.path.join(self._runbook.path, 'roles', role))
-            Task.setRole(role)
+            Task.set_role(role)
 
             with open(role.main_file) as f:
                 code = compile(f.read(), role.path, 'exec')

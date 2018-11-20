@@ -109,7 +109,7 @@ def main():
         dest = 'package.pyz'
 
         logging.header('Sending package to ' + ssh.remote)
-        out, err = ssh.copyTo(pkg, dest)
+        out, err = ssh.copy_to(pkg, dest)
         if err:
             logging.error('Sending package failed.')
             sys.exit(1)

@@ -8,15 +8,15 @@ class Task:
     _role = None
 
     @classmethod
-    def setQueue(cls, queue):
+    def set_queue(cls, queue):
         cls._queue = queue
 
     @classmethod
-    def setRunBook(cls, runbook):
+    def set_runBook(cls, runbook):
         cls._runbook = runbook
 
     @classmethod
-    def setRole(cls, role):
+    def set_role(cls, role):
         cls._role = role
 
     @property

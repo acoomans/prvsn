@@ -19,14 +19,14 @@ class KernelModuleTask(Task):
         return str(self._action).capitalize() + ' kernel module "' + self._module_name + '".'
 
     @staticmethod
-    def checkLoadableModules():
+    def check_loadable_modules():
         cmd, out, ret, err = run(['which', 'modprobe'])
         if ret or err:
             return 'Cannot find loadable linux modules.'
         return None
 
     def run(self):
-        err = self.checkLoadableModules()
+        err = self.check_loadable_modules()
         if err: return '', 'Cannot find loadable linux modules.'
 
         if self._action == KernelModuleAction.ADD:

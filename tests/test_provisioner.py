@@ -46,7 +46,7 @@ class TestProvisioner(unittest.TestCase):
     def testProvisioner(self):
 
         q = Queue()
-        TestTask.setQueue(q)
+        TestTask.set_queue(q)
 
         self.assertFalse(os.path.exists(self.file), 'file should not exist; test set up incorrectly?')
 
@@ -63,7 +63,7 @@ class TestProvisioner(unittest.TestCase):
 
     def testQueues(self):
         q = Queue()
-        TestTask.setQueue(q)
+        TestTask.set_queue(q)
         self.assertEqual(len(q), 0)
 
         p = Provisioner(

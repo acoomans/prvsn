@@ -38,7 +38,7 @@ class Ssh:
             log_output=log_output
         )
 
-    def copyTo(self, src, dest, log_output=logging.debug):
+    def copy_to(self, src, dest, log_output=logging.debug):
         out1 = ''
         err1 = ''
         if os.path.dirname(dest):
@@ -60,7 +60,7 @@ class Ssh:
         )
         return out1 + '\n' + out1, err1 + err2
 
-    def copyFrom(self, src, dest, log_output=logging.debug):
+    def copy_from(self, src, dest, log_output=logging.debug):
         mkdir_p(os.path.dirname(dest))
         return self.run([
                 '/usr/bin/scp',
