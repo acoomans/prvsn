@@ -11,7 +11,9 @@ from prvsnlib.utils.zip import zipdir
 
 class Packager:
 
-    def __init__(self, runbook, roles=[], tmpdir=None, dest=None, cleanup=True, verbose=False):
+    def __init__(self, runbook, roles=None, tmpdir=None, dest=None, cleanup=True, verbose=False):
+        if roles is None:
+            roles = []
         self._runbook = runbook
         self._roles = roles
         self._tmpdir = tmpdir

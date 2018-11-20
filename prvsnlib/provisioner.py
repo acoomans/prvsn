@@ -14,7 +14,9 @@ from prvsnlib.task import Task
 
 class Provisioner:
 
-    def __init__(self, runbook, roles, queue=Queue(), extra_imports={}, share_locals=False):
+    def __init__(self, runbook, roles, queue=Queue(), extra_imports=None, share_locals=False):
+        if extra_imports is None:
+            extra_imports = {}
         logging.debug('Provisioner init.')
 
         self._runbook = runbook

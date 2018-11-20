@@ -29,5 +29,7 @@ class FileTask(Task):
                                       self._file)
 
 
-def file(source, file, replacements={}, action=FileAction.ADD, secure=False):
+def file(source, file, replacements=None, action=FileAction.ADD, secure=False):
+    if replacements is None:
+        replacements = {}
     FileTask(source, file, replacements, action, secure)
