@@ -14,7 +14,7 @@ from prvsnlib.runbook import Runbook
 
 class TestTask(Task):
 
-    def __init__(self, ):
+    def __init__(self):
         Task.__init__(self)
 
     def run(self):
@@ -63,7 +63,12 @@ class TestProvisioner(unittest.TestCase):
 
     def testQueues(self):
         q = Queue()
+        self.assertEqual(len(q), 0, 'Queue should be empty; test incorrectly setup?')
+
         TestTask.set_queue(q)
         self.assertEqual(len(q), 0)
 
+        TestTask()
+        TestTask()
+        
         self.assertEqual(len(q), 2)
