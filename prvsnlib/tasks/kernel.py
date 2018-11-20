@@ -27,12 +27,14 @@ class KernelModuleTask(Task):
 
     def run(self):
         err = self.check_loadable_modules()
-        if err: return '', 'Cannot find loadable linux modules.'
+        if err:
+            return '', 'Cannot find loadable linux modules.'
 
         if self._action == KernelModuleAction.ADD:
             return add_string_if_not_present_in_file('/etc/modules', self._module_name)
         elif self._action == KernelModuleAction.ADD:
             return delete_string_from_file('/etc/modules', self._module_name)
+
 
 def module(d, action=KernelModuleAction.ADD, secure=False):
     KernelModuleTask(d, action, secure)

@@ -14,11 +14,14 @@ class LoggingLevels:
 def header(message, *args, **kwargs):
     logging.log(LoggingLevels.HEADER, message, *args, **kwargs)
 
+
 logging.header = header
 logging.addLevelName(LoggingLevels.HEADER, 'Header')
 
+
 def success(message, *args, **kwargs):
     logging.log(LoggingLevels.SUCCESS, message, *args, **kwargs)
+
 
 logging.success = success
 logging.addLevelName(LoggingLevels.SUCCESS, 'Success')
@@ -46,6 +49,7 @@ class Formatter(logging.Formatter):
         elif record.levelno == logging.CRITICAL:
             res = Colors.ERROR + res + Colors.END
         return res
+
 
 formatter = Formatter()
 hdlr = logging.StreamHandler(sys.stdout)

@@ -1,5 +1,6 @@
 import os
 
+
 class Role:
 
     def __init__(self, name, path):

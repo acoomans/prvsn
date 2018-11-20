@@ -1,31 +1,30 @@
 from .command import (
-command,
-bash,
-ruby,
+    command,
+    bash,
+    ruby,
 )
 
 from .file import (
-file,
+    file,
 )
 
 from .filetype import (
-file_handler
+    file_handler
 )
 
 from .hostname import (
-hostname,
+    hostname,
 )
 
-
 from .kernel import (
-module,
+    module,
 )
 
 from .package import (
-apt_package,
-cask_package,
-homebrew_package,
-mac_app_store,
-package,
-yum_package,
+    apt_package,
+    cask_package,
+    homebrew_package,
+    mac_app_store,
+    package,
+    yum_package,
 )

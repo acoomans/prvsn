@@ -7,7 +7,7 @@ import sys
 
 from copy import copy
 
-if (sys.version_info < (3, 0)):
+if sys.version_info < (3, 0):
     from urllib2 import urlopen
 else:
     from urllib.request import urlopen
@@ -24,6 +24,7 @@ def mkdir_p(path):
         else:
             logging.debug('Something happened while trying to create ' + path + '.')
 
+
 def write_file_content(filepath, contents):
     if os.path.exists(filepath):
         shutil.copyfile(filepath, filepath + '.orig')
@@ -32,10 +33,11 @@ def write_file_content(filepath, contents):
         f.write(contents)
         logging.debug('Writing to ' + filepath + '.')
 
+
 def is_url(source):
     res = (
-            source.startswith('http://') or \
-            source.startswith('https://') or \
+            source.startswith('http://') or
+            source.startswith('https://') or
             source.startswith('file://')
     )
     if res:
@@ -44,8 +46,8 @@ def is_url(source):
     logging.debug(source + ' is not a URL.')
     return False
 
+
 def get_file_contents(source, relative=None):
-    contents = None
     if is_url(source):
         logging.debug('Fetching ' + source + ' from network.')
         response = urlopen(source)
@@ -57,6 +59,7 @@ def get_file_contents(source, relative=None):
         with open(source, 'r') as f:
             contents = f.read()
     return contents
+
 
 def get_replace_write_file(source, relative, replacements, filepath):
     try:
@@ -70,7 +73,8 @@ def get_replace_write_file(source, relative, replacements, filepath):
             logging.debug(source + ' not found. Continuing with empty data.')
             original_data = []
 
-        if not replacements: replacements = {}
+        if not replacements:
+            replacements = {}
 
         data = get_file_contents(source, relative)
         new_data = replace_all(data, replacements)
@@ -89,6 +93,7 @@ def get_replace_write_file(source, relative, replacements, filepath):
     except Exception as e:
         return '', str(e)
 
+
 def add_string_if_not_present_in_file(filepath, s):
     try:
         if os.path.exists(filepath):
@@ -96,7 +101,7 @@ def add_string_if_not_present_in_file(filepath, s):
             with open(filepath, 'r') as f:
                 original_data = f.readlines()
             logging.debug('Making backup of ' + filepath + '.')
-            shutil.copyfile(filepath, filepath+'.orig')
+            shutil.copyfile(filepath, filepath + '.orig')
         else:
             logging.debug(filepath + ' not found. Continuing with empty data.')
             original_data = []
@@ -118,12 +123,13 @@ def add_string_if_not_present_in_file(filepath, s):
         logging.debug('Write to ' + filepath + '.')
 
         out = ''
-        for line in difflib.unified_diff(original_data, new_data, fromfile=filepath+'.orig', tofile=filepath):
+        for line in difflib.unified_diff(original_data, new_data, fromfile=filepath + '.orig', tofile=filepath):
             out += line
         return out, ''
 
     except Exception as e:
         return '', str(e)
+
 
 def delete_string_from_file(filepath, s):
     try:
@@ -131,7 +137,7 @@ def delete_string_from_file(filepath, s):
         with open(filepath, 'r') as f:
             original_data = f.readlines()
         logging.debug('Making backup of ' + filepath + '.')
-        shutil.copyfile(filepath, filepath+'.orig')
+        shutil.copyfile(filepath, filepath + '.orig')
         new_data = copy(original_data)
 
         need_to_save = False
@@ -153,7 +159,7 @@ def delete_string_from_file(filepath, s):
         logging.debug('Write to ' + filepath + '.')
 
         out = ''
-        for line in difflib.unified_diff(original_data, new_data, fromfile=filepath+'.orig', tofile=filepath):
+        for line in difflib.unified_diff(original_data, new_data, fromfile=filepath + '.orig', tofile=filepath):
             out += line
         return out, ''
 

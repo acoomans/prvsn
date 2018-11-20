@@ -1,6 +1,5 @@
 import getpass
 import importlib
-import inspect
 import logging
 import os
 import sys
@@ -24,7 +23,7 @@ class Provisioner:
 
         self._queue = queue
         Task.set_queue(queue)
-        Task.set_runBook(self._runbook)
+        Task.set_runbook(self._runbook)
 
         self._extra_imports = extra_imports
         self._share_locals = share_locals
@@ -89,11 +88,14 @@ class Provisioner:
             logging.header(str(task))
 
             out, err = task.run()
-            if task.secure: logging.info('(secure: output omitted)')
-            else: logging.info(out)
+            if task.secure:
+                logging.info('(secure: output omitted)')
+            else:
+                logging.info(out)
 
             if err:
-                if not task.secure: logging.error(err)
+                if not task.secure:
+                    logging.error(err)
                 logging.error('Task failed.')
                 sys.exit(1)
         logging.success('Provisioned.')

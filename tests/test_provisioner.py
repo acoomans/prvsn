@@ -14,13 +14,14 @@ from prvsnlib.runbook import Runbook
 
 class TestTask(Task):
 
-    def __init__(self,):
+    def __init__(self, ):
         Task.__init__(self)
 
     def run(self):
         with open('/tmp/qweqewqeqweqewdafasfsfd', 'w') as f:
             f.write('hello')
         return '', ''
+
 
 def test():
     TestTask()
@@ -44,7 +45,6 @@ class TestProvisioner(unittest.TestCase):
             os.unlink(self.file)
 
     def testProvisioner(self):
-
         q = Queue()
         TestTask.set_queue(q)
 
@@ -65,12 +65,5 @@ class TestProvisioner(unittest.TestCase):
         q = Queue()
         TestTask.set_queue(q)
         self.assertEqual(len(q), 0)
-
-        p = Provisioner(
-            self.runbook,
-            ['queue'],
-            queue=q,
-            extra_imports={'tests.test_provisioner': ['test']},
-        ).run()
 
         self.assertEqual(len(q), 2)

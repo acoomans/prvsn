@@ -1,6 +1,7 @@
 from ..task import Task
 from prvsnlib.utils.run import run
 
+
 class HostnameTask(Task):
 
     def __init__(self, name, secure):
@@ -12,10 +13,8 @@ class HostnameTask(Task):
 
     def run(self):
         cmd, out, ret, err = run(['hostnamectl', 'set-hostname', self._name])
-        return cmd+'\n'+out, err
+        return cmd + '\n' + out, err
+
 
 def hostname(name, secure=False):
     HostnameTask(name, secure)
-
-
-

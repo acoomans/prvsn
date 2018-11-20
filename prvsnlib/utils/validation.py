@@ -2,8 +2,6 @@ import logging
 import os
 import sys
 
-from prvsnlib.runbook import Runbook
-
 
 def log_error_and_exit(message):
     logging.error(message)
@@ -11,8 +9,8 @@ def log_error_and_exit(message):
 
 
 def validate_runbook(runbook):
-    if not os.path.isdir(runbook._path):
-        log_error_and_exit('Argument "' + runbook._path + '" is not a valid runbook path.')
+    if not os.path.isdir(runbook.path):
+        log_error_and_exit('Argument "' + runbook.path + '" is not a valid runbook path.')
     return True
 
 

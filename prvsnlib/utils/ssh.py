@@ -43,19 +43,19 @@ class Ssh:
         err1 = ''
         if os.path.dirname(dest):
             out1, err1 = self.run([
-                    '/usr/bin/ssh',
-                    self.username + '@' + self.hostname,
-                    'mkdir -p ' + os.path.dirname(dest),
-                ],
+                '/usr/bin/ssh',
+                self.username + '@' + self.hostname,
+                'mkdir -p ' + os.path.dirname(dest),
+            ],
                 log_output=log_output
             )
         if err1:
             return out1, err1
         out2, err2 = self.run([
-                '/usr/bin/scp',
-                src,
-                self.username + '@' + self.hostname + ':' + dest,
-            ],
+            '/usr/bin/scp',
+            src,
+            self.username + '@' + self.hostname + ':' + dest,
+        ],
             log_output=log_output
         )
         return out1 + '\n' + out1, err1 + err2
@@ -63,10 +63,10 @@ class Ssh:
     def copy_from(self, src, dest, log_output=logging.debug):
         mkdir_p(os.path.dirname(dest))
         return self.run([
-                '/usr/bin/scp',
-                self.username + '@' + self.hostname + ':' + src,
-                dest,
-            ],
+            '/usr/bin/scp',
+            self.username + '@' + self.hostname + ':' + src,
+            dest,
+        ],
             log_output=log_output,
         )
 
@@ -84,7 +84,8 @@ class Ssh:
         return self.key_file + '.pub'
 
     def create_public_key_file_if_not_exist(self, key_file=None):
-        if not key_file: key_file = self.key_file
+        if not key_file:
+            key_file = self.key_file
         public_key_file = key_file + '.pub'
         if not os.path.exists(public_key_file):
             config_dir = os.path.dirname(key_file)
@@ -105,9 +106,9 @@ class Ssh:
         self.create_public_key_file_if_not_exist()
 
         out, err = self.run([
-                '/usr/bin/ssh-copy-id',
-                self.username + '@' + self.hostname,
-            ],
+            '/usr/bin/ssh-copy-id',
+            self.username + '@' + self.hostname,
+        ],
         )
         if 'skipped because they already exist' in out:
             logging.success('Public keys already present. Skipping.')
@@ -122,8 +123,8 @@ class Ssh:
 
         pid, child_fd = pty.fork()
 
-        def is_child_pid(pid):
-            return not pid
+        def is_child_pid(p):
+            return not p
 
         if is_child_pid(pid):
             os.execv(commands[0], commands)
@@ -137,7 +138,7 @@ class Ssh:
             try:
                 r = os.read(child_fd, 1024).strip()
                 wpid, wret, wres = os.wait4(pid, os.WNOHANG)
-            except Exception as e:
+            except Exception:
                 break
             lower = r.lower()
 
@@ -162,7 +163,7 @@ class Ssh:
                 os.write(child_fd, password.encode('utf-8') + b'\n')
 
             elif r:
-                output.append(r.decode('utf-8')+'\n')
+                output.append(r.decode('utf-8') + '\n')
 
             if wret:
                 err = '\n'.join(output)

@@ -1,10 +1,11 @@
 import os
 import zipfile
 
-def zipdir(path, zip, filter=None):
-    with zipfile.ZipFile(zip, 'w', zipfile.ZIP_DEFLATED) as zf:
+
+def zipdir(path, dest, pattern=None):
+    with zipfile.ZipFile(dest, 'w', zipfile.ZIP_DEFLATED) as zf:
         for root, dirs, files in os.walk(path):
             for file in files:
                 fp = os.path.join(root, file)
-                if not filter or filter(fp):
+                if not pattern or pattern(fp):
                     zf.write(fp, arcname=os.path.relpath(fp, path))

@@ -33,7 +33,7 @@ class TestCommandTask(unittest.TestCase):
     def testBash(self):
         self.assertFalse(os.path.exists(self.path()), 'file should not exist yet; test set up incorrectly?')
 
-        p = Provisioner(
+        Provisioner(
             self.runbook,
             ['command'],
         ).run()

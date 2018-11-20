@@ -1,5 +1,4 @@
 class Colors:
-
     HEADER = '\033[96m'
 
     OK = '\033[92m'

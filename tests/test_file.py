@@ -143,7 +143,7 @@ class TestFile(unittest.TestCase):
         self.assertTrue(contents)
 
     def test_get_file_contents_from_file_url(self):
-        contents = get_file_contents('file://'+self.file)
+        contents = get_file_contents('file://' + self.file)
         self.assertTrue(contents)
 
     def test_get_file_contents_from_local_file(self):

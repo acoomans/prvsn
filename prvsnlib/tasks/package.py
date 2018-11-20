@@ -11,8 +11,8 @@ class PackageAction:
     INSTALL = 'install'
     REMOVE = 'remove'
 
-class PackageTask(Task):
 
+class PackageTask(Task):
     _packageClass = False
 
     @classmethod
@@ -21,17 +21,17 @@ class PackageTask(Task):
             try:
                 if subprocess.check_output(['which', 'brew']):
                     cls._packageClass = HomebrewPackageTask
-            except:
+            except Exception:
                 pass
             try:
                 if subprocess.check_output(['which', 'apt-get']):
                     cls._packageClass = AptPackageTask
-            except:
+            except Exception:
                 pass
             try:
                 if subprocess.check_output(['which', 'yum']):
                     cls._packageClass = YumPackageTask
-            except:
+            except Exception:
                 pass
         return cls._packageClass(*args, **kwargs)
 
@@ -76,7 +76,7 @@ class HomebrewPackageTask(PackageTask):
             return cmd, err
         if ret:
             return cmd, out
-        return cmd+'\n'+out, ''
+        return cmd + '\n' + out, ''
 
 
 class CaskPackageTask(PackageTask):
@@ -101,6 +101,7 @@ class CaskPackageTask(PackageTask):
         if ret:
             return cmd, out
         return cmd + '\n' + out, ''
+
 
 class MasPackageTask(PackageTask):
 
@@ -141,7 +142,7 @@ class AptPackageTask(PackageTask):
             return cmd, err
         if ret:
             return cmd, out
-        return cmd+'\n'+out, ''
+        return cmd + '\n' + out, ''
 
 
 class YumPackageTask(PackageTask):
@@ -159,7 +160,7 @@ class YumPackageTask(PackageTask):
             return cmd, err
         if ret:
             return cmd, out
-        return cmd+'\n'+out, ''
+        return cmd + '\n' + out, ''
 
 
 def package(*args, **kwargs):

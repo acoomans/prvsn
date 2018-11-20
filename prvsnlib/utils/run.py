@@ -3,17 +3,17 @@ import logging
 from subprocess import Popen, PIPE, STDOUT, CalledProcessError
 
 
-def run(commands, input=None):
+def run(commands, stdin=None):
     try:
         logging.debug('Popen.')
         p = Popen(commands, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-        if input:
+        if stdin:
             logging.debug('Communicate input as stdin.')
             cmd = ''
-            for line in input.splitlines():
+            for line in stdin.splitlines():
                 if line:
-                    cmd += '('+' '.join(commands)+') ' + line + '\n'
-            stdout, stderr = p.communicate(input.encode('utf-8'))
+                    cmd += '(' + ' '.join(commands) + ') ' + line + '\n'
+            stdout, stderr = p.communicate(stdin.encode('utf-8'))
         else:
             logging.debug('No input. Just running command.')
             cmd = ' '.join(commands)

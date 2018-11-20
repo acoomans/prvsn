@@ -71,7 +71,7 @@ class Packager:
         )
 
     def build_package(self):
-        logging.header('Packaging runbook "' + self._runbook._path + '"')
+        logging.header('Packaging runbook "' + self._runbook.path + '"')
 
         if not self._dest:
             fd, self._dest = tempfile.mkstemp(suffix='.pyz')

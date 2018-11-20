@@ -1,4 +1,3 @@
-
 def replace_all(s, replacements=None):
     if replacements is None:
         replacements = {}

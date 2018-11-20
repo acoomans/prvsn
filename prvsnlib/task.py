@@ -1,5 +1,3 @@
-from .queue import Queue
-
 
 class Task:
 
@@ -12,7 +10,7 @@ class Task:
         cls._queue = queue
 
     @classmethod
-    def set_runBook(cls, runbook):
+    def set_runbook(cls, runbook):
         cls._runbook = runbook
 
     @classmethod
