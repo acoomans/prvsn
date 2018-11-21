@@ -1,6 +1,6 @@
 import subprocess
 
-from ..task import Task
+from ..task import Task, TaskResult
 from prvsnlib.utils.run import run
 
 
@@ -33,7 +33,8 @@ class FiletypeHandlerTask(Task):
         cmd, out, ret, err = '', '', '', ''
         if self.file_handler_tool == FiletypeHandlerType.DUTI:
             cmd, out, ret, err = run(['duti', '-s', self._handler, self._extension, 'all'])
-        return cmd + '\n' + out, err
+            return TaskResult(command=cmd, output=out, returncode=ret, error=err)
+        return TaskResult(error='No file handler tool available.')
 
 
 def file_handler(*args, **kwargs):

@@ -1,3 +1,30 @@
+class TaskResult:
+
+    def __init__(self, command=[], output=[], returncode=None, error=[]):
+        self._command = command
+        self._output = output
+        self._returncode = returncode
+        self._error = error
+
+    @property
+    def command(self):
+        return self._command
+
+    @property
+    def output(self):
+        return self._output
+
+    @property
+    def returncode(self):
+        if not self._returncode:
+            return len(self._error)
+        return self._returncode
+
+    @property
+    def error(self):
+        return self._error
+
+
 
 class Task:
 
@@ -31,6 +58,8 @@ class Task:
         self.user = user
 
     def run(self):
-        out = 'No output'
-        err = 'Task run not implemented'
-        return out, err
+        return TaskResult(
+            command=['None'],
+            output=['No output'],
+            error = 'Task run not implemented'
+        )

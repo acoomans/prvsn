@@ -1,7 +1,7 @@
 import os
 
 from prvsnlib.utils.file import mkdir_p, get_replace_write_file
-from ..task import Task
+from ..task import Task, TaskResult
 
 
 class FileAction:
@@ -22,10 +22,11 @@ class FileTask(Task):
 
     def run(self):
         mkdir_p(os.path.dirname(self._dest))
-        return get_replace_write_file(self._source,
+        out, err = get_replace_write_file(self._source,
                                       os.path.join(self._role.path, 'files'),
                                       self._replacements,
                                       self._dest)
+        return TaskResult(output=out, error=err)
 
 
 def file(source, dest, replacements=None, action=FileAction.ADD, secure=False):

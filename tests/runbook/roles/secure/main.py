@@ -1,7 +1,7 @@
 
 bash('''
 echo "I am secure"
-''', 
+''',
 secure=True
 )
 

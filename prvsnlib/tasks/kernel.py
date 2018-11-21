@@ -1,5 +1,5 @@
 from prvsnlib.utils.file import add_string_if_not_present_in_file, delete_string_from_file
-from ..task import Task
+from ..task import Task, TaskResult
 from prvsnlib.utils.run import run
 
 
@@ -26,14 +26,15 @@ class KernelModuleTask(Task):
         return None
 
     def run(self):
-        err = self.check_loadable_modules()
-        if err:
-            return '', 'Cannot find loadable linux modules.'
+        if self.check_loadable_modules():
+            return TaskResult(error='Cannot find loadable linux modules.')
 
+        out, err = '', ''
         if self._action == KernelModuleAction.ADD:
-            return add_string_if_not_present_in_file('/etc/modules', self._module_name)
+            out, err = add_string_if_not_present_in_file('/etc/modules', self._module_name)
         elif self._action == KernelModuleAction.ADD:
-            return delete_string_from_file('/etc/modules', self._module_name)
+            out, err = delete_string_from_file('/etc/modules', self._module_name)
+        return TaskResult(output=out, error=err)
 
 
 def module(d, action=KernelModuleAction.ADD, secure=False):

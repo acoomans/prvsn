@@ -87,19 +87,31 @@ class Provisioner:
         for task in self._queue.tasks:
             logging.header(str(task))
 
-            cmd, run = task.run()
-            for i in run.out:
-                print(i)
+            result = task.run()
 
+            if task.secure:
+                logging.info('(secure: output omitted)')
+            else:
+                if result.command:
+                    for line in result.command:
+                        logging.info(line)
 
-            # if task.secure:
-            #     logging.info('(secure: output omitted)')
-            # else:
-            #     logging.info(out)
-            #
-            # if err:
-            #     if not task.secure:
-            #         logging.error(err)
-            #     logging.error('Task failed.')
-            #     sys.exit(1)
+                if result.output:
+                    for line in result.output:
+                        logging.info(line)
+
+            if result.returncode is None:
+                pass
+            elif result.returncode == 0:
+                logging.info('return code: ' + str(result.returncode))
+            elif result.returncode > 0:
+                logging.error('return code: ' + str(result.returncode))
+                sys.exit(1)
+
+            if result.error:
+                for line in result.error:
+                    logging.error(line)
+                logging.error('error')
+                sys.exit(1)
+
         logging.success('Provisioned.')

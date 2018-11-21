@@ -7,7 +7,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from prvsnlib.provisioner import Provisioner
-from prvsnlib.task import Task
+from prvsnlib.task import Task, TaskResult
 from prvsnlib.queue import Queue
 from prvsnlib.runbook import Runbook
 
@@ -20,7 +20,7 @@ class TestTask(Task):
     def run(self):
         with open('/tmp/qweqewqeqweqewdafasfsfd', 'w') as f:
             f.write('hello')
-        return '', ''
+        return TaskResult()
 
 
 def test():

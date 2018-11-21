@@ -1,4 +1,4 @@
-from ..task import Task
+from ..task import Task, TaskResult
 from prvsnlib.utils.run import run
 
 
@@ -13,7 +13,7 @@ class HostnameTask(Task):
 
     def run(self):
         cmd, out, ret, err = run(['hostnamectl', 'set-hostname', self._name])
-        return cmd + '\n' + out, err
+        return TaskResult(command=cmd, output=out, returncode=ret, error=err)
 
 
 def hostname(name, secure=False):
