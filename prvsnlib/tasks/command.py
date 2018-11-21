@@ -24,13 +24,16 @@ class CommandTask(Task):
         if self.user and self.user != getpass.getuser():
             user_cmd = ['sudo', '-u', self.user]
 
-        cmd, out, ret, err = run(user_cmd + self._interpreter, stdin=self._cmd)
-        cmd = cmd + '\n'
-        if err:
-            return cmd, err
-        if ret:
-            return cmd, out
-        return cmd + out, ''
+        return run(user_cmd + self._interpreter, stdin=self._cmd)
+
+
+        # cmd, out, ret, err = run(user_cmd + self._interpreter, stdin=self._cmd)
+        # cmd = cmd + '\n'
+        # if err:
+        #     return cmd, err
+        # if ret:
+        #     return cmd, out
+        # return cmd + out, ''
 
 
 def command(*args, **kwargs):
