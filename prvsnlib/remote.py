@@ -35,7 +35,7 @@ class Remote:
         logging.success('Sent.')
 
         logging.header('Remotely executing package on ' + ssh.remote)
-        out, err = ssh.command(['python', dest], log_level=logging.INFO, sudo=self._sudo)
+        out, err = ssh.run_command(['python', dest], log_level=logging.INFO, sudo=self._sudo)
         if err:
             logging.error('Remotely executing package failed.')
             sys.exit(1)

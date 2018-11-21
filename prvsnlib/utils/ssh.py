@@ -21,7 +21,7 @@ class Ssh:
     def remote(self):
         return self.hostname + '@' + self.username
 
-    def command(self, commands, log_level=logging.DEBUG, sudo=False):
+    def run_command(self, commands, log_level=logging.DEBUG, sudo=False):
         commands_to_run = [
             '/usr/bin/ssh',
             '-t',
