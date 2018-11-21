@@ -21,7 +21,7 @@ class Ssh:
     def remote(self):
         return self.hostname + '@' + self.username
 
-    def command(self, commands, log_output=logging.debug, sudo=False):
+    def command(self, commands, log_level=logging.DEBUG, sudo=False):
         commands_to_run = [
             '/usr/bin/ssh',
             '-t',
@@ -35,10 +35,10 @@ class Ssh:
 
         return self.run(
             commands_to_run,
-            log_output=log_output
+            log_level=log_level
         )
 
-    def copy_to(self, src, dest, log_output=logging.debug):
+    def copy_to(self, src, dest, log_level=logging.DEBUG):
         out1 = ''
         err1 = ''
         if os.path.dirname(dest):
@@ -47,7 +47,7 @@ class Ssh:
                 self.username + '@' + self.hostname,
                 'mkdir -p ' + os.path.dirname(dest),
             ],
-                log_output=log_output
+                log_level=log_level
             )
         if err1:
             return out1, err1
@@ -56,18 +56,18 @@ class Ssh:
             src,
             self.username + '@' + self.hostname + ':' + dest,
         ],
-            log_output=log_output
+            log_level=log_level
         )
         return out1 + '\n' + out1, err1 + err2
 
-    def copy_from(self, src, dest, log_output=logging.debug):
+    def copy_from(self, src, dest, log_level=logging.DEBUG):
         mkdir_p(os.path.dirname(dest))
         return self.run([
             '/usr/bin/scp',
             self.username + '@' + self.hostname + ':' + src,
             dest,
         ],
-            log_output=log_output,
+            log_level=log_level,
         )
 
     @property
@@ -118,7 +118,7 @@ class Ssh:
             logging.success('Public keys copied.')
         return out, err
 
-    def run(self, commands, log_output=logging.debug):
+    def run(self, commands, log_level=logging.DEBUG):
         logging.debug('Running "' + ' '.join(commands) + '"')
 
         pid, child_fd = pty.fork()
@@ -176,5 +176,5 @@ class Ssh:
                 password_attempted = False
 
         out = ''.join(output)
-        log_output(out)
+        logging.log(log_level, out)
         return out, ''
