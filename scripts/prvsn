@@ -12,8 +12,8 @@ if dir == 'scripts':
 
 from prvsnlib.packager import Packager
 from prvsnlib.provisioner import Provisioner
+from prvsnlib.remote import Remote
 from prvsnlib.runbook import Runbook
-from prvsnlib.utils.ssh import Ssh
 
 from prvsnlib.utils.validation import (
     validate_runbook,
@@ -128,26 +128,13 @@ def main():
             verbose=args.verbose,
         ).build_package()
 
-        ssh = Ssh(remote=args.hostname, user=args.username)
-
-        if not args.no_copy_keys:
-            ssh.copy_public_keys()
-
-        dest = 'package.pyz'
-
-        logging.header('Sending package to ' + ssh.remote)
-        out, err = ssh.copy_to(pkg, dest)
-        if err:
-            logging.error('Sending package failed.')
-            sys.exit(1)
-        logging.success('Sent.')
-
-        logging.header('Remotely executing package on ' + ssh.remote)
-        out, err = ssh.command(['python', dest], log_level=logging.INFO, sudo=args.sudo)
-        if err:
-            logging.error('Remotely executing package failed.')
-            sys.exit(1)
-        logging.success('Executed.')
+        remote = Remote(
+            hostname=args.hostname,
+            username=args.username,
+            no_copy_keys=args.no_copy_keys,
+            package=args.output,
+            sudo=args.sudo
+        ).run()
 
     else:
         logging.error('Invalid command.')
