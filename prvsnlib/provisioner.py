@@ -117,7 +117,7 @@ class Provisioner:
                 exit_code = 1
 
             if exit_code:
-                logging.success('Failed.')
+                logging.error('Failed.')
                 sys.exit(exit_code)
 
         logging.success('Provisioned.')
