@@ -1,6 +1,4 @@
-def replace_all(s, replacements=None):
-    if replacements is None:
-        replacements = {}
+def replace_all(s, replacements={}):
     keys = list(replacements.keys())
     keys.sort(key=len, reverse=True)
     for key in keys:
