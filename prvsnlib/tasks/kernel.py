@@ -20,16 +20,14 @@ class KernelModuleTask(Task):
 
     @staticmethod
     def check_loadable_modules():
-        cmd, out, ret, err = run(['which', 'modprobe'])
-        if ret or err:
-            return 'Cannot find loadable linux modules.'
-        return None
+        r = run(['which', 'modprobe'])
+        return r.returncode == 0 and not r.error
 
     def run(self):
-        if self.check_loadable_modules():
-            return TaskResult(error='Cannot find loadable linux modules.')
+        if not self.check_loadable_modules():
+            return TaskResult(error=['Cannot find loadable linux modules.'])
 
-        out, err = '', ''
+        out, err = [], []
         if self._action == KernelModuleAction.ADD:
             out, err = add_string_if_not_present_in_file('/etc/modules', self._module_name)
         elif self._action == KernelModuleAction.ADD:
