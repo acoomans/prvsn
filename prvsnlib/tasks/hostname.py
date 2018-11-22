@@ -12,8 +12,7 @@ class HostnameTask(Task):
         return 'Hostname ' + self._name
 
     def run(self):
-        cmd, out, ret, err = run(['hostnamectl', 'set-hostname', self._name])
-        return TaskResult(command=cmd, output=out, returncode=ret, error=err)
+        return run(['hostnamectl', 'set-hostname', self._name])
 
 
 def hostname(name, secure=False):
