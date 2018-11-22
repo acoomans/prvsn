@@ -61,5 +61,5 @@ class Task:
         return TaskResult(
             command=['None'],
             output=['No output'],
-            error = 'Task run not implemented'
+            error = ['Task run not implemented']
         )
