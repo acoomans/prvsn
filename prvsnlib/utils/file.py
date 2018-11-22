@@ -1,7 +1,9 @@
 import difflib
 import errno
+import grp
 import logging
 import os
+import pwd
 import shutil
 import sys
 
@@ -164,4 +166,20 @@ def delete_string_from_file(filepath, s):
         return [out], []
 
     except Exception as e:
+        return [], [str(e)]
+
+def chown(path, owner, group, recursive):
+    try:
+        uid = pwd.getpwnam(owner).pw_uid if owner else -1
+        gid = grp.getgrnam(group).gr_gid if group else -1
+
+        out, err = [], []
+        if recursive:
+            for root, dirs, files in os.walk(path):
+                for d in dirs:
+                    os.chown(os.path.join(root, d), uid, gid)
+                for f in files:
+                    os.chown(os.path.join(root, f), uid, gid)
+        return ['changed.'], []
+    except OSError as e:
         return [], [str(e)]
