@@ -2,6 +2,7 @@ import difflib
 import errno
 import grp
 import logging
+import mimetypes
 import os
 import pwd
 import shutil
@@ -84,12 +85,15 @@ def get_replace_write_file(source, relative, replacements, filepath):
         logging.debug('Write to ' + filepath + '.')
 
         out = ''
-        for line in difflib.unified_diff(
-                original_data,
-                new_data.splitlines(True),
-                fromfile=filepath + '.orig',
-                tofile=filepath):
-            out += line
+        if diff and is_likely_text_file(source + '.orig') and is_likely_text_file(filepath):
+            for line in difflib.unified_diff(
+                    original_data,
+                    new_data.splitlines(True),
+                    fromfile=filepath + '.orig',
+                    tofile=filepath):
+                out += line
+        else:
+            out = 'File changed.'
         return [out], []
 
     except Exception as e:
@@ -182,4 +186,9 @@ def chown(path, owner, group, recursive):
                     os.chown(os.path.join(root, f), uid, gid)
         return ['changed.'], []
     except OSError as e:
-        return [], [str(e)]
+        return [], [str(e)]def is_likely_text_file(path):
+
+def is_likely_text_file(path):
+    if mimetypes.guess_type(path)[0] == 'text/plain':
+        return True
+    return False

@@ -4,7 +4,12 @@ import os
 import shutil
 import unittest
 
-from prvsnlib.utils.file import add_string_if_not_present_in_file, delete_string_from_file, get_file_contents
+from prvsnlib.utils.file import (
+    add_string_if_not_present_in_file,
+    delete_string_from_file,
+    get_file_contents,
+    is_likely_text_file
+)
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
@@ -156,4 +161,19 @@ class TestFile(unittest.TestCase):
     def test_get_file_contents_from_local_file(self):
         contents = get_file_contents(self.file)
         self.assertTrue(contents)
+
+    @property
+    def zip_file(self):
+        this_file = inspect.getfile(inspect.currentframe())
+        this_dir = os.path.dirname(os.path.abspath(this_file))
+        return os.path.join(this_dir, 'files', 'test.zip')
+
+    def test_is_likely_binary_file_txt(self):
+        self.assertTrue(is_likely_text_file(self.file))
+
+    def test_is_likely_binary_file_zip(self):
+        self.assertFalse(is_likely_text_file(self.zip_file))
+
+
+
 
