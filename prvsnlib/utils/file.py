@@ -81,7 +81,7 @@ def get_replace_write_file(source, relative, replacements, filepath, diff=True):
         if replacements:
             if not type(data) is str:
                 data = data.decode('utf-8')
-                data = replace_all(data, replacements).encode('utf-8')
+            data = replace_all(data, replacements).encode('utf-8')
 
         write_file_content(filepath, data)
         logging.debug('Write to ' + filepath + '.')
@@ -90,7 +90,7 @@ def get_replace_write_file(source, relative, replacements, filepath, diff=True):
         if diff and is_likely_text_file(source + '.orig') and is_likely_text_file(filepath):
             for line in difflib.unified_diff(
                     original_data,
-                    new_data.splitlines(True),
+                    data.splitlines(True),
                     fromfile=filepath + '.orig',
                     tofile=filepath):
                 out += line

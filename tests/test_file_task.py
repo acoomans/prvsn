@@ -48,8 +48,8 @@ class TestFileTask(unittest.TestCase):
             ['file'],
         ).run()
 
-        self.assertTrue(os.path.exists(self.path1))
-        self.assertTrue(os.path.exists(self.path2))
+        self.assertTrue(os.path.exists(self.path1), 'file at ' + self.path1 + ' should exist')
+        self.assertTrue(os.path.exists(self.path2), 'file at ' + self.path2 + ' should exist')
 
         with open(self.path2, 'r') as f:
             contents = f.read()

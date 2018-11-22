@@ -60,9 +60,7 @@ class ChownTask(Task):
         return TaskResult(output=out, error=err)
 
 
-def file(source, dest, replacements=None, owner=None, group=None, diff=True, action=FileAction.ADD, secure=False):
-    if replacements is None:
-        replacements = {}
+def file(source, dest, replacements={}, owner=None, group=None, diff=True, action=FileAction.ADD, secure=False):
     FileTask(source, dest, replacements, diff, action, secure)
     if owner or group:
         ChownTask(dest, owner, group, recursive=False)
