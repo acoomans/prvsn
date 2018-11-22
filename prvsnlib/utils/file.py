@@ -32,7 +32,7 @@ def write_file_content(filepath, contents):
     if os.path.exists(filepath):
         shutil.copyfile(filepath, filepath + '.orig')
         logging.debug('Making backup of ' + filepath + '.')
-    with open(filepath, 'w') as f:
+    with open(filepath, 'wb') as f:
         f.write(contents)
         logging.debug('Writing to ' + filepath + '.')
 
@@ -59,29 +59,31 @@ def get_file_contents(source, relative=None):
         logging.debug('Fetching ' + source + ' from local disk.')
         if relative:
             source = os.path.join(relative, source)
-        with open(source, 'r') as f:
+        with open(source, 'rb') as f:
             contents = f.read()
     return contents
 
 
-def get_replace_write_file(source, relative, replacements, filepath):
+def get_replace_write_file(source, relative, replacements, filepath, diff=True):
     try:
         if os.path.exists(filepath):
             logging.debug('Reading ' + source + '.')
-            with open(filepath, 'r') as f:
-                original_data = f.readlines()
+            with open(filepath, 'rb') as f:
+                original_data = f.read()
             logging.debug('Making backup of ' + source + '.')
             shutil.copyfile(filepath, filepath + '.orig')
         else:
             logging.debug(source + ' not found. Continuing with empty data.')
             original_data = []
 
-        if not replacements:
-            replacements = {}
-
         data = get_file_contents(source, relative)
-        new_data = replace_all(data, replacements)
-        write_file_content(filepath, new_data)
+
+        if replacements:
+            if not type(data) is str:
+                data = data.decode('utf-8')
+                data = replace_all(data, replacements).encode('utf-8')
+
+        write_file_content(filepath, data)
         logging.debug('Write to ' + filepath + '.')
 
         out = ''
@@ -128,10 +130,10 @@ def add_string_if_not_present_in_file(filepath, s):
                 file.writelines(new_data)
         logging.debug('Write to ' + filepath + '.')
 
-        out = ''
+        out = []
         for line in difflib.unified_diff(original_data, new_data, fromfile=filepath + '.orig', tofile=filepath):
-            out += line
-        return [out], []
+            out.append(line)
+        return out, []
 
     except Exception as e:
         return [], [str(e)]
@@ -164,10 +166,10 @@ def delete_string_from_file(filepath, s):
                 file.writelines(new_data)
         logging.debug('Write to ' + filepath + '.')
 
-        out = ''
+        out = []
         for line in difflib.unified_diff(original_data, new_data, fromfile=filepath + '.orig', tofile=filepath):
-            out += line
-        return [out], []
+            out.append(line)
+        return out, []
 
     except Exception as e:
         return [], [str(e)]
@@ -186,7 +188,7 @@ def chown(path, owner, group, recursive):
                     os.chown(os.path.join(root, f), uid, gid)
         return ['changed.'], []
     except OSError as e:
-        return [], [str(e)]def is_likely_text_file(path):
+        return [], [str(e)]
 
 def is_likely_text_file(path):
     if mimetypes.guess_type(path)[0] == 'text/plain':
