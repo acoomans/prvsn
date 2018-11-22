@@ -11,6 +11,13 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 class TestFile(unittest.TestCase):
 
+    def assertSameFiles(self, file1, file2):
+        with open(file1, 'r') as f:
+            data1 = f.readlines()
+        with open(file2, 'r') as f:
+            data2 = f.readlines()
+        self.assertEqual(data1, data2)
+
     @property
     def file(self):
         this_file = inspect.getfile(inspect.currentframe())
@@ -150,9 +157,3 @@ class TestFile(unittest.TestCase):
         contents = get_file_contents(self.file)
         self.assertTrue(contents)
 
-    def assertSameFiles(self, file1, file2):
-        with open(file1, 'r') as f:
-            data1 = f.readlines()
-        with open(file2, 'r') as f:
-            data2 = f.readlines()
-        self.assertEqual(data1, data2)
