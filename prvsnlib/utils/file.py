@@ -51,7 +51,7 @@ def get_file_contents(source, relative=None):
     if is_url(source):
         logging.debug('Fetching ' + source + ' from network.')
         response = urlopen(source)
-        contents = response.read().decode('utf-8')
+        contents = response.read()
     else:
         logging.debug('Fetching ' + source + ' from local disk.')
         if relative:
@@ -88,10 +88,10 @@ def get_replace_write_file(source, relative, replacements, filepath):
                 fromfile=filepath + '.orig',
                 tofile=filepath):
             out += line
-        return out, ''
+        return [out], []
 
     except Exception as e:
-        return '', str(e)
+        return [], [str(e)]
 
 
 def add_string_if_not_present_in_file(filepath, s):
@@ -125,10 +125,10 @@ def add_string_if_not_present_in_file(filepath, s):
         out = ''
         for line in difflib.unified_diff(original_data, new_data, fromfile=filepath + '.orig', tofile=filepath):
             out += line
-        return out, ''
+        return [out], []
 
     except Exception as e:
-        return '', str(e)
+        return [], [str(e)]
 
 
 def delete_string_from_file(filepath, s):
@@ -161,7 +161,7 @@ def delete_string_from_file(filepath, s):
         out = ''
         for line in difflib.unified_diff(original_data, new_data, fromfile=filepath + '.orig', tofile=filepath):
             out += line
-        return out, ''
+        return [out], []
 
     except Exception as e:
-        return '', [str(e)]
+        return [], [str(e)]
