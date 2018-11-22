@@ -65,6 +65,7 @@ class Provisioner:
         self.user_check()
 
         logging.header('Runbook ' + self._runbook.path)
+        logging.header('Roles ' + ', '.join(self._roles))
         self.build_roles()
         self.run_tasks()
 
