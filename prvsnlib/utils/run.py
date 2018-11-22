@@ -74,7 +74,8 @@ class Process():
 
     @property
     def returncode(self):
-        self._process.wait()
+        if self._process:
+            self._process.wait()
         if type(self._exception) is subprocess.CalledProcessError:
             r = self._exception.returncode
         elif self._exception:
@@ -86,7 +87,8 @@ class Process():
 
     @property
     def error(self):
-        self._process.wait()
+        if self._process:
+            self._process.wait()
         logging.debug('Process error:  ' + str(self._exception))
         if self._exception:
             return [str(self._exception)]
