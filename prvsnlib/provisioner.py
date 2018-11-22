@@ -100,18 +100,24 @@ class Provisioner:
                     for line in result.output:
                         logging.info(line)
 
-            if result.returncode is None:
-                pass
-            elif result.returncode == 0:
-                logging.info('return code: ' + str(result.returncode))
-            elif result.returncode > 0:
-                logging.error('return code: ' + str(result.returncode))
-                sys.exit(1)
+            exit_code = 0
 
             if result.error:
                 for line in result.error:
                     logging.error(line)
                 logging.error('error')
-                sys.exit(1)
+                exit_code = 1
+
+            if result.returncode is None:
+                pass
+            elif result.returncode == 0:
+                logging.debug('return code: ' + str(result.returncode))
+            elif result.returncode > 0:
+                logging.error('return code: ' + str(result.returncode))
+                exit_code = 1
+
+            if exit_code:
+                logging.success('Failed.')
+                sys.exit(exit_code)
 
         logging.success('Provisioned.')
