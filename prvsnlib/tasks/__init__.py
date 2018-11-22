@@ -29,3 +29,7 @@ from .package import (
     package,
     yum_package,
 )
+
+from .zip import (
+    unzip
+)
