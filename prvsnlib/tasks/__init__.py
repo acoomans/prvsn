@@ -5,6 +5,7 @@ from .command import (
 )
 
 from .file import (
+    chown,
     file,
 )
 

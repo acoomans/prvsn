@@ -26,17 +26,22 @@ class FileTask(Task):
         return 'Setting up file "' + self._dest + '"'
 
     def run(self):
+        out, err = [], []
         mkdir_p(os.path.dirname(self._dest))
-        out, err = get_replace_write_file(self._source,
-                                      os.path.join(self._role.path, 'files'),
-                                      self._replacements,
-                                      self._dest)
-
+        if self._source:
+            o, e = get_replace_write_file(self._source,
+                                          os.path.join(self._role.path, 'files'),
+                                          self._replacements,
+                                          self._dest)
+            out += o
+            err += e
         try:
             uid = pwd.getpwnam(self._owner).pw_uid if self._owner else -1
             gid = grp.getgrnam(self._group).gr_gid if self._group else -1
             os.chown(self._dest, uid, gid)
         except OSError as e:
+            print(uid)
+            print(gid)
             err.append('Could not change file ownership.')
 
         return TaskResult(output=out, error=err)
@@ -46,3 +51,6 @@ def file(source, dest, replacements=None, owner=None, group=None, action=FileAct
     if replacements is None:
         replacements = {}
     FileTask(source, dest, replacements, owner, group, action, secure)
+
+def chown(file, owner=None, group=None):
+    FileTask(None, file, None, owner, group, None, False)
