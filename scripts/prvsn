@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import argparse
+import atexit
 import getpass
 import logging
 import os
@@ -15,6 +16,8 @@ from prvsnlib.provisioner import Provisioner
 from prvsnlib.remote import Remote
 from prvsnlib.runbook import Runbook
 
+from prvsnlib.utils.timer import Timer
+
 from prvsnlib.utils.validation import (
     validate_runbook,
     validate_roles,
@@ -24,6 +27,9 @@ from prvsnlib.utils.validation import (
 
 
 def main():
+    t = Timer()
+    atexit.register(t.get)
+
     parser = argparse.ArgumentParser(description='Simple machine provisioning tool.')
 
     parser.add_argument('-b', '--runbook',
