@@ -1,8 +1,9 @@
 import logging
+import subprocess
 import unittest
 
 import prvsnlib.log
-from prvsnlib.utils.run import Process
+from prvsnlib.utils.run import Run
 
 
 logging.root.setLevel(logging.DEBUG)
@@ -19,36 +20,28 @@ class TestRun(unittest.TestCase):
         self.assertTrue(v in l, msg)
 
     def testProcessSimpleOutput(self):
-        p = Process(['echo', 'hello']).run()
-        self.assertJoinedEqual(p.command, 'echo hello', 'incorrect command')
+        p = Run(['echo', 'hello']).run()
+        self.assertJoinedEqual(p.commands, 'echo hello', 'incorrect command')
         self.assertJoinedEqual(p.output, 'hello', 'incorrect output')
-        self.assertEqual(p.returncode, 0, 'incorrect return')
-        self.assertIsNone(p.error, 'incorrect error')
 
     def testProcessMultilineOutput(self):
-        p = Process(['echo', 'hello\nbye']).run()
-        self.assertJoinedEqual(p.command, 'echo hello\nbye', 'incorrect command')
+        p = Run(['echo', 'hello\nbye']).run()
+        self.assertJoinedEqual(p.commands, 'echo hello\nbye', 'incorrect command')
         self.assertJoinedEqual(p.output, 'hellobye', 'incorrect output')
-        self.assertEqual(p.returncode, 0, 'incorrect return')
-        self.assertIsNone(p.error, 'incorrect error')
 
     def testProcessStdin(self):
-        p = Process(['cat'], stdin='hello\nwhatsup\nbye').run()
-        self.assertJoinedEqual(p.command, '(cat) hello(cat) whatsup(cat) bye', 'incorrect command')
+        p = Run(['cat'], stdin='hello\nwhatsup\nbye').run()
+        self.assertJoinedEqual(p.commands, '(cat) hello(cat) whatsup(cat) bye', 'incorrect command')
         self.assertJoinedEqual(p.output, 'hellowhatsupbye', 'incorrect output')
-        self.assertEqual(p.returncode, 0, 'incorrect return')
-        self.assertIsNone(p.error, 'incorrect error')
 
     def testProcessErrorReturn(self):
-        p = Process(['test', '-n', '']).run()
-        self.assertJoinedEqual(p.command, 'test -n ', 'incorrect command')
-        self.assertJoinedEqual(p.output, '', 'incorrect output')
-        self.assertEqual(p.returncode, 1, 'incorrect return')
-        self.assertIsNone(p.error, 'incorrect error')
+        with self.assertRaises(subprocess.CalledProcessError):
+            p = Run(['test', '-n', '']).run()
+            self.assertJoinedEqual(p.commands, 'test -n ', 'incorrect command')
+            self.assertJoinedEqual(p.output, '', 'incorrect output')
 
     def testProcessInvalidCommand(self):
-        p = Process(['fjksdhfkljsahfjshaf']).run()
-        self.assertJoinedEqual(p.command, 'fjksdhfkljsahfjshaf', 'incorrect command')
-        self.assertInJoinedEqual(p.output, 'No such file or directory', 'incorrect output')
-        self.assertEqual(p.returncode, 1, 'incorrect return')
-        self.assertIsNotNone(p.error, 'incorrect error')
+        with self.assertRaises(Exception):
+            p = Run(['fjksdhfkljsahfjshaf']).run()
+            self.assertJoinedEqual(p.commands, 'fjksdhfkljsahfjshaf', 'incorrect command')
+            self.assertInJoinedEqual(p.output, 'No such file or directory', 'incorrect output')
