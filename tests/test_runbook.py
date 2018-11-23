@@ -12,11 +12,11 @@ class TestRunbook(unittest.TestCase):
         this_file = inspect.getfile(inspect.currentframe())
         this_dir = os.path.dirname(os.path.abspath(this_file))
         runbook = os.path.join(this_dir, 'runbook')
-        return Runbook('', runbook)
+        return Runbook(runbook)
 
     @property
     def not_runbook(self):
-        return Runbook('', '/tmp/fsdjfhsljfsdhfkqehrklhjkhfdklshjfksahkf')
+        return Runbook('/tmp/fsdjfhsljfsdhfkqehrklhjkhfdklshjfksahkf')
 
     def testRunbookRoles(self):
         self.assertGreater(len(self.runbook.roles), 3)

@@ -14,7 +14,7 @@ if dir == 'scripts':
 from prvsnlib.packager import Packager
 from prvsnlib.provisioner import Provisioner
 from prvsnlib.remote import Remote
-from prvsnlib.runbook import Runbook
+from prvsnlib.runbook import Runbook, init_runbook
 
 from prvsnlib.utils.timer import Timer
 
@@ -85,10 +85,10 @@ def main():
         args.hostname = 'localhost'
 
     if args.command == 'init':
-        Runbook('runbook', args.runbook).create_scaffolding()
+        init_runbook(args.runbook)
 
     elif args.command == 'package':
-        runbook = Runbook('runbook', args.runbook)
+        runbook = Runbook(args.runbook)
 
         validate_runbook(runbook)
         validate_roles(runbook, args.roles)
@@ -109,7 +109,7 @@ def main():
                 else:
                     logging.warning('Cannot sudo; not a tty. Running as user "' + getpass.getuser() + '"')
 
-        runbook = Runbook('runbook', args.runbook)
+        runbook = Runbook(args.runbook)
 
         validate_runbook(runbook)
         validate_roles(runbook, args.roles)
@@ -118,9 +118,10 @@ def main():
             runbook,
             args.roles.split(','),
         ).run()
+
     elif args.command == 'remote':
 
-        runbook = Runbook('runbook', args.runbook)
+        runbook = Runbook(args.runbook)
 
         validate_runbook(runbook)
         validate_roles(runbook, args.roles)

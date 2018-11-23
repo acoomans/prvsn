@@ -16,7 +16,7 @@ class TestCommandTask(unittest.TestCase):
         this_file = inspect.getfile(inspect.currentframe())
         this_dir = os.path.dirname(os.path.abspath(this_file))
         runbook = os.path.join(this_dir, 'runbook')
-        return Runbook('runbook', runbook)
+        return Runbook(runbook)
 
     @staticmethod
     def path():

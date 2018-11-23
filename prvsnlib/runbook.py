@@ -8,13 +8,12 @@ from .utils.file import mkdir_p
 
 class Runbook:
 
-    def __init__(self, name, path):
-        self._name = name
+    def __init__(self, path):
         self._path = path
-        self._roles = []
+        self._roles = None
 
     def __repr__(self):
-        return '<Runbook "' + self._name + '" (' + self._path + ')>'
+        return '<Runbook ' + self.name + '>'
 
     @property
     def path(self):
@@ -22,64 +21,58 @@ class Runbook:
 
     @property
     def name(self):
-        return self._name
-
-    @property
-    def metadata_file(self):
-        return os.path.join(self._path, 'metadata.py')
+        return os.path.basename(self._path)
 
     @property
     def roles(self):
-        if not self._roles:
+        if self._roles is None:
             roles = []
             roles_path = os.path.join(self._path, 'roles')
             if os.path.exists(roles_path):
-                for file in os.listdir(roles_path):
-                    file_path = os.path.join(self._path, 'roles', file)
-                    if os.path.isdir(file_path):
-                        main_path = os.path.join(file_path, 'main.py')
+                for directory in os.listdir(roles_path):
+                    directory_path = os.path.join(self._path, 'roles', directory)
+                    if os.path.isdir(directory_path):
+                        main_path = os.path.join(directory_path, 'main.py')
                         if os.path.isfile(main_path):
-                            role = Role(file, file_path)
+                            role = Role(directory_path)
                             roles.append(role)
             self._roles = roles
-
         return self._roles
 
-    def create_scaffolding(self):
 
-        logging.info('Initializing runbook "' + self._path + '"')
+def init_runbook(path):
+    logging.info('Initializing runbook "' + path + '"')
 
-        roles_path = os.path.join(self._path, 'roles')
-        mkdir_p(roles_path)
+    roles_path = os.path.join(path, 'roles')
+    mkdir_p(roles_path)
 
-        base_roles_path = os.path.join(roles_path, 'base')
-        mkdir_p(base_roles_path)
+    base_roles_path = os.path.join(roles_path, 'base')
+    mkdir_p(base_roles_path)
 
-        main_base_roles_path = os.path.join(base_roles_path, 'main.py')
-        with open(main_base_roles_path, 'w') as f:
-            data = textwrap.dedent('''
-                # This is a template for a role
+    main_base_roles_path = os.path.join(base_roles_path, 'main.py')
+    with open(main_base_roles_path, 'w') as f:
+        data = textwrap.dedent('''
+            # This is a template for a role
 
-                bash('echo "Hello World!"')
+            bash('echo "Hello World!"')
 
-                # package('my_package')
-                
-                # file(
-                #   'example.conf', 
-                #   '/etc/example.conf', 
-                #   replacements={
-                #       'old_string': 'new_string'
-                #   }
-                # )
-                
-            ''').strip()
-            f.write(data)
+            # package('my_package')
+            
+            # file(
+            #   'example.conf', 
+            #   '/etc/example.conf', 
+            #   replacements={
+            #       'old_string': 'new_string'
+            #   }
+            # )
+        ''').strip()
+        f.write(data)
 
-        files_base_roles_path = os.path.join(base_roles_path, 'files')
-        mkdir_p(files_base_roles_path)
+    files_base_roles_path = os.path.join(base_roles_path, 'files')
+    mkdir_p(files_base_roles_path)
 
-        with open(os.path.join(files_base_roles_path, 'example.conf'), 'w') as f:
-            data = textwrap.dedent('''
-                my_variable = old_string
-            ''')
-            f.write(data)
+    with open(os.path.join(files_base_roles_path, 'example.conf'), 'w') as f:
+        data = textwrap.dedent('''
+            my_variable = old_string
+        ''')
+        f.write(data)

@@ -44,7 +44,7 @@ class TestFileTask(unittest.TestCase):
         self.assertFalse(os.path.exists(self.path2), 'file should not exist yet; test set up incorrectly?')
 
         Provisioner(
-            Runbook('', self.runbook),
+            Runbook(self.runbook),
             ['file'],
         ).run()
 

@@ -3,12 +3,11 @@ import os
 
 class Role:
 
-    def __init__(self, name, path):
-        self._name = name
+    def __init__(self, path):
         self._path = path
 
     def __repr__(self):
-        return '<Role "' + self._name + '" (' + self._path + ')>'
+        return '<Role ' + self.name + '>'
 
     @property
     def path(self):
@@ -16,7 +15,7 @@ class Role:
 
     @property
     def name(self):
-        return self._name
+        return os.path.basename(self._path)
 
     @property
     def main_file(self):

@@ -58,7 +58,7 @@ class Packager:
 
                 d = extract_runbook()
                 Provisioner(
-                    Runbook('runbook', os.path.join(d, 'runbook')),
+                    Runbook(os.path.join(d, 'runbook')),
                     {roles},
                 ).run()
                 delete_runbook(d)
