@@ -7,6 +7,7 @@ import sys
 
 from prvsnlib.log import StdoutLogger
 from prvsnlib.role import Role
+from .context import context
 
 
 class Provisioner:
@@ -52,6 +53,11 @@ class Provisioner:
             with StdoutLogger():
                 for role in self._roles:
                     role = Role(os.path.join(self._runbook.path, 'roles', role))
+
+                    global provisioning_context
+
+                    context.runbook = self._runbook
+                    context.role = role
 
                     with open(role.main_file) as f:
                         code = compile(f.read(), role.path, 'exec')
