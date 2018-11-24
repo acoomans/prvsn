@@ -34,7 +34,7 @@ class Provisioner:
         logging.header('Runbook ' + self._runbook.path)
         logging.header('Roles ' + ', '.join(self._roles))
 
-        def exec_locals():
+        def exec_locals(runbook, role):
 
             to_import = {'prvsnlib.tasks': ['*']}
             to_import.update(self._extra_imports)
@@ -47,6 +47,8 @@ class Provisioner:
                         exec_locals.update(module.__dict__)
                     else:
                         exec_locals[symbol_name] = getattr(module, symbol_name)
+            exec_locals['runbook'] = runbook
+            exec_locals['role'] = role
             return exec_locals
 
         try:
@@ -61,7 +63,7 @@ class Provisioner:
 
                     with open(role.main_file) as f:
                         code = compile(f.read(), role.path, 'exec')
-                    exec(code, exec_locals())
+                    exec(code, exec_locals(self._runbook, role))
 
         except subprocess.CalledProcessError as e:
             logging.error(str(e))
