@@ -30,6 +30,6 @@ from .kernel import (
 #     yum_package,
 # )
 #
-# from .zip import (
-#     unzip
-# )
+from .zip import (
+    unzip
+)

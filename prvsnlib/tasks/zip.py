@@ -1,46 +1,35 @@
+import logging
 import os
 import zipfile
 
-from ..task import Task, TaskResult
-
-from prvsnlib.tasks.file import ChownTask
-
-from prvsnlib.utils.file import mkdir_p
+from prvsnlib.context import context
+from prvsnlib.utils.file import mkdir_p, chown
 
 
 class ZipAction:
     EXTRACT = 'extract'
 
 
-class ZipTask(Task):
+def unzip(src, dest, owner=None, group=None, action=ZipAction.EXTRACT):
+    if action == ZipAction.EXTRACT:
+        logging.header('Extract zip file '+ src)
 
-    def __init__(self, source, dest, action, **kwargs):
-        Task.__init__(self, **kwargs)
-        self._source = source
-        self._dest = dest
-        self._action = action
+        mkdir_p(os.path.dirname(dest))
 
-    def __str__(self):
-        return 'Zip file'
+        global context
 
-    def run(self):
-        out, err = [], []
-        mkdir_p(os.path.dirname(self._dest))
+        if not os.path.exists(src):
+            source = os.path.join(context.role.path, 'files', src)
 
-        source = self._source
-        if not os.path.exists(self._source):
-            source = os.path.join(self._role.path, 'files', self._source)
+        zf = zipfile.ZipFile(src)
+        r = zf.extractall(dest)
 
-        try:
-            zf = zipfile.ZipFile(source)
-            r = zf.extractall(self._dest)
-        except OSError as e:
-            return TaskResult(error=str(e))
-
-        return TaskResult(output=['Unzipped'])
+        if owner or group:
+            chown(dest, owner, group, recursive=True)
+    else:
+        raise Exception('Invalid action')
 
 
-def unzip(source, dest, owner=None, group=None, action=ZipAction.EXTRACT):
-    ZipTask(source, dest, action)
-    if owner or group:
-        ChownTask(dest, owner, group, recursive=True)
+
+
+
