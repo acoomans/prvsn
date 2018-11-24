@@ -13,9 +13,9 @@ from .filetype import (
     file_handler
 )
 
-# from .hostname import (
-#     hostname,
-# )
+from .hostname import (
+    hostname,
+)
 #
 # from .kernel import (
 #     module,
