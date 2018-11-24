@@ -42,21 +42,38 @@ class TestFile(unittest.TestCase):
         return '/tmp/prvsn/test.txt.orig'
 
     @property
-    def zip_file(self):
+    def zip(self):
         this_file = inspect.getfile(inspect.currentframe())
         this_dir = os.path.dirname(os.path.abspath(this_file))
         return os.path.join(this_dir, 'files', 'test.zip')
+
+    @property
+    def test_zip(self):
+        return '/tmp/prvsn/test.zip'
+
+    @property
+    def orig_zip(self):
+        return '/tmp/prvsn/test.zip.orig'
 
     def setUp(self):
         if not os.path.exists('/tmp/prvsn'):
             os.mkdir('/tmp/prvsn')
         shutil.copyfile(self.file, self.test_file)
+        shutil.copyfile(self.file, self.test_zip)
 
     def tearDown(self):
         if os.path.exists(self.test_file):
             os.remove(self.test_file)
+
         if os.path.exists(self.orig_file):
             os.remove(self.orig_file)
+
+        if os.path.exists(self.test_zip):
+            os.remove(self.test_zip)
+
+        if os.path.exists(self.orig_zip):
+            os.remove(self.orig_zip)
+
         if os.path.exists('/tmp/prvsn'):
             os.rmdir('/tmp/prvsn')
 
@@ -188,7 +205,7 @@ class TestFileContents(TestFile):
         self.assertTrue(type(contents) is str)
 
     def test_get_file_bytes_from_local_file(self):
-        contents = get_file_bytes_or_text(self.zip_file)
+        contents = get_file_bytes_or_text(self.test_zip)
         self.assertTrue(contents)
         self.assertTrue(type(contents) is bytes)
 
@@ -204,7 +221,7 @@ class TestFileContents(TestFile):
 
     def test_copy_file_bytes(self):
         with self.assertRaises(Exception):
-            copy_file(self.zip_file, self.zip_file, replacements={'c': 'e'})
+            copy_file(self.test_zip, self.test_zip, replacements={'c': 'e'})
 
     def test_copy_file_no_src(self):
         with self.assertRaises(Exception):
@@ -217,4 +234,4 @@ class TestFileType(TestFile):
         self.assertTrue(is_likely_text_file(self.file))
 
     def test_is_likely_binary_file_zip(self):
-        self.assertFalse(is_likely_text_file(self.zip_file))
+        self.assertFalse(is_likely_text_file(self.test_zip))
