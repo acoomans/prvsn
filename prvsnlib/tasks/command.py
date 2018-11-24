@@ -13,12 +13,7 @@ def command(interpreter, commands, user=None, action=CommandAction.RUN):
     if action == CommandAction.RUN:
         logging.header('Run ' + interpreter[0])
 
-        user_cmd = []
-
-        if type(user) is str and user != getpass.getuser():
-            user_cmd = ['sudo', '-u', user]
-
-        return Run(user_cmd + interpreter, stdin=commands).run()
+        return Run(interpreter, stdin=commands, user=user).run()
 
     else:
         raise Exception('Invalid action')

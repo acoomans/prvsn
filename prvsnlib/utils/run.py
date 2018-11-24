@@ -1,6 +1,8 @@
+import getpass
+import itertools
 import logging
 import subprocess
-import itertools
+
 
 STDIN_FILENO = 0
 STDOUT_FILENO = 1
@@ -11,10 +13,11 @@ CHILD = 0
 
 class Run():
 
-    def __init__(self, commands, stdin=None):
+    def __init__(self, commands, stdin=None, user=None):
 
         self._commands = commands
         self._stdin_data = stdin
+        self._user = user
 
         self._process = None
         self._output_generator = None
@@ -22,8 +25,13 @@ class Run():
 
     def run(self):
         logging.debug('Popen.')
+
+        user_cmd = []
+        if self._user and self._user != getpass.getuser():
+            user_cmd = ['sudo', '-u', self._user]
+
         self._process = subprocess.Popen(
-            self._commands,
+            user_cmd + self._commands,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
             bufsize=0, universal_newlines=True)
 
