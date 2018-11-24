@@ -7,24 +7,12 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from prvsnlib.provisioner import Provisioner
-from prvsnlib.task import Task, TaskResult
-from prvsnlib.queue import Queue
 from prvsnlib.runbook import Runbook
 
 
-class TestTask(Task):
-
-    def __init__(self):
-        Task.__init__(self)
-
-    def run(self):
-        with open('/tmp/qweqewqeqweqewdafasfsfd', 'w') as f:
-            f.write('hello')
-        return TaskResult()
-
-
 def test():
-    TestTask()
+    with open('/tmp/qweqewqeqweqewdafasfsfd', 'w') as f:
+        f.write('hello')
 
 
 class TestProvisioner(unittest.TestCase):
@@ -38,22 +26,19 @@ class TestProvisioner(unittest.TestCase):
         this_file = inspect.getfile(inspect.currentframe())
         this_dir = os.path.dirname(os.path.abspath(this_file))
         runbook = os.path.join(this_dir, 'runbook')
-        return Runbook('', runbook)
+        return Runbook(runbook)
 
     def setUp(self):
         if os.path.exists(self.file):
             os.unlink(self.file)
 
     def testProvisioner(self):
-        q = Queue()
-        TestTask.set_queue(q)
 
         self.assertFalse(os.path.exists(self.file), 'file should not exist; test set up incorrectly?')
 
         p = Provisioner(
             self.runbook,
             ['provisioner'],
-            queue=q,
             extra_imports={'tests.test_provisioner': ['test']},
         )
         self.assertFalse(os.path.exists(self.file), 'cond should be false; cond changed before task is run?')
@@ -61,14 +46,4 @@ class TestProvisioner(unittest.TestCase):
         p.run()
         self.assertTrue(os.path.exists(self.file), 'file should exist; cond not changed correctly in task run?')
 
-    def testQueues(self):
-        q = Queue()
-        self.assertEqual(len(q), 0, 'Queue should be empty; test incorrectly setup?')
 
-        TestTask.set_queue(q)
-        self.assertEqual(len(q), 0)
-
-        TestTask()
-        TestTask()
-        
-        self.assertEqual(len(q), 2)

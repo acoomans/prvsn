@@ -1,70 +1,52 @@
-import grp
+import logging
 import os
-import pwd
 
-
-from prvsnlib.utils.file import mkdir_p, get_replace_write_file
-from prvsnlib.utils.file import chown as pchown
-from ..task import Task, TaskResult
+from prvsnlib.context import context
+from prvsnlib.utils.file import mkdir_p, copy_file
+from prvsnlib.utils.file import chown as chown_util
 
 
 class FileAction:
     ADD = 'add'
+    REMOVE = 'remove'
 
 
-class FileTask(Task):
+def file(a, b=None,
+         replacements={},
+         owner=None, group=None,
+         diff=True,
+         action=FileAction.ADD,
+         secure=False):
 
-    def __init__(self, source, dest, replacements, diff, action, secure):
-        Task.__init__(self, secure)
-        self._source = source
-        self._dest = dest
-        self._replacements = replacements
-        self._diff = diff
-        self._action = action
+    if action == FileAction.ADD:
+        logging.header('Setting up file ' + b)
 
-    def __str__(self):
-        return 'Setting up file "' + self._dest + '"'
+        base = os.path.basename(b)
+        mkdir_p(base)
 
-    def run(self):
-        out, err = [], []
-        mkdir_p(os.path.dirname(self._dest))
-        if self._source:
-            out, err = get_replace_write_file(
-                self._source,
-                os.path.join(self._role.path, 'files'),
-                self._replacements,
-                self._dest,
-                diff=self._diff)
-        return TaskResult(output=out, error=err)
+        global context
 
-
-class ChownTask(Task):
-
-    def __init__(self, path, owner, group, recursive):
-        Task.__init__(self)
-        self._path = path
-        self._owner = owner
-        self._group = group
-        self._recusive = recursive
-
-    def __str__(self):
-        return 'Change ownership of file "' + self._path + '"'
-
-    def run(self):
-        out, err = pchown(
-            self._path,
-            self._owner,
-            self._group,
-            self._recusive,
+        copy_file(
+            a,
+            b,
+            replacements=replacements,
+            relative=os.path.join(context.role.path, 'files'),
+            diff=diff
         )
-        return TaskResult(output=out, error=err)
+
+        if owner or group:
+            chown_util(b, owner, group, recursive=False)
+
+    elif action == FileAction.REMOVE:
+        logging.header('Removing file ' + a)
+        os.unlink(a)
+
+    else:
+        raise Exception('Invalid action')
 
 
-def file(source, dest, replacements={}, owner=None, group=None, diff=True, action=FileAction.ADD, secure=False):
-    FileTask(source, dest, replacements, diff, action, secure)
-    if owner or group:
-        ChownTask(dest, owner, group, recursive=False)
-
-
-def chown(path, owner=None, group=None, recursive=False):
-    ChownTask(path, owner, group, recursive)
+def chown(path,
+          owner=None, group=None,
+          recursive=False):
+    logging.header('Changing ownership of file ' + path)
+    chown_util(path, owner, group, recursive)

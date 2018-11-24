@@ -4,10 +4,10 @@ from .command import (
     ruby,
 )
 
-# from .file import (
-#     chown,
-#     file,
-# )
+from .file import (
+    chown,
+    file,
+)
 #
 # from .filetype import (
 #     file_handler
