@@ -1,8 +1,8 @@
 import getpass
+import logging
 import subprocess
 
-from prvsnlib.utils.run import run
-from ..task import Task, TaskResult
+from prvsnlib.utils.run import Run
 
 
 class PackageAction:
@@ -12,8 +12,9 @@ class PackageAction:
     REMOVE = 'remove'
 
 
-class PackageTask(Task):
-    _packageClass = False
+class PackageTask:
+
+    _packageClass = None
 
     @classmethod
     def package(cls, *args, **kwargs):
@@ -35,12 +36,13 @@ class PackageTask(Task):
                 pass
         return cls._packageClass(*args, **kwargs)
 
-    def __init__(self, name='', action=PackageAction.INSTALL, **kwargs):
-        Task.__init__(self, **kwargs)
+    def __init__(self, name='', user=None, action=PackageAction.INSTALL):
         self._name = name.split()
+        self._user = user
         self._action = action
 
-    def __str__(self):
+    @property
+    def header(self):
         if self._action == PackageAction.INSTALL:
             return 'Install package'
         elif self._action == PackageAction.REMOVE:
@@ -49,111 +51,101 @@ class PackageTask(Task):
             return 'Update packages list'
         elif self._action == PackageAction.UPGRADE:
             return 'Upgrade all packages'
-        return 'Package action "' + str(self._action) + '" not implemented.'
+        raise Exception('Imvalid action')
 
     def run(self):
-        return TaskResult(error='Not implemented.')
+        logging.header(self.header)
 
 
 class HomebrewPackageTask(PackageTask):
-
     def run(self):
-        user_cmd = []
-        if self.user and self.user != getpass.getuser():
-            user_cmd = ['sudo', '-u', self.user]
+        super(HomebrewPackageTask, self).run()
 
         if self._action == PackageAction.UPDATE:
-            return run(user_cmd + ['brew', 'update'])
+            return Run(['brew', 'update'], user=self._user).run()
         elif self._action == PackageAction.UPGRADE:
-            return run(user_cmd + ['brew', 'upgrade'] + self._name)
+            return Run(['brew', 'upgrade'] + self._name, user=self._user).run()
         elif self._action == PackageAction.INSTALL:
-            return run(user_cmd + ['brew', 'install'] + self._name)
+            return Run(['brew', 'install'] + self._name, user=self._user).run()
         elif self._action == PackageAction.REMOVE:
-            return run(user_cmd + ['brew', 'uninstall'] + self._name)
-        return TaskResult(error='Action not available')
+            return Run(['brew', 'uninstall'] + self._name, user=self._user).run()
 
 
 class CaskPackageTask(PackageTask):
-
     def run(self):
-        user_cmd = []
-        if self.user and self.user != getpass.getuser():
-            user_cmd = ['sudo', '-u', self.user]
+        super(CaskPackageTask, self).run()
 
         if self._action == PackageAction.UPDATE:
-            return TaskResult(output='No update function for Cask. Ignoring.')
+            logging.info('No update function for Cask. Ignoring.')
         elif self._action == PackageAction.UPGRADE:
-            return run(user_cmd + ['brew', 'cask', 'upgrade'] + self._name)
+            return Run(['brew', 'cask', 'upgrade'] + self._name, user=self._user).run()
         elif self._action == PackageAction.INSTALL:
-           return run(user_cmd + ['brew', 'cask', 'install'] + self._name)
+           return Run(['brew', 'cask', 'install'] + self._name, user=self._user).run()
         elif self._action == PackageAction.REMOVE:
-            return run(user_cmd + ['brew', 'cask', 'uninstall'] + self._name)
-        return TaskResult(error='Action not available')
+            return Run(['brew', 'cask', 'uninstall'] + self._name, user=self._user).run()
 
 
 class MasPackageTask(PackageTask):
-
     def run(self):
-        user_cmd = []
-        if self.user and self.user != getpass.getuser():
-            user_cmd = ['sudo', '-u', self.user]
+        super(MasPackageTask, self).run()
 
         if self._action == PackageAction.UPDATE:
-            return TaskResult(output='No update function for app store. Ignoring.')
+            logging.info('No update function for app store. Ignoring.')
         elif self._action == PackageAction.UPGRADE:
-            return run(user_cmd + ['mas', 'upgrade'] + self._name)
+            return Run(['mas', 'upgrade'] + self._name, user=self._user).run()
         elif self._action == PackageAction.INSTALL:
-            return run(user_cmd + ['mas', 'install'] + self._name)
+            return Run(['mas', 'install'] + self._name, user=self._user).run()
         elif self._action == PackageAction.REMOVE:
-            return TaskResult(returncode=1, error='No remove function for app store.')
-        return TaskResult(error='Action not available')
+            raise Exception('No remove function for app store.')
 
 
 class AptPackageTask(PackageTask):
     def run(self):
+        super(AptPackageTask, self).run()
+
         if self._action == PackageAction.UPDATE:
-            return run(['apt-get', 'update'])
+            return Run(['apt-get', 'update']).run()
         elif self._action == PackageAction.UPGRADE:
-            return run(['apt-get', 'upgrade', '-y', '--no-install-recommends'] + self._name)
+            return Run(['apt-get', 'upgrade', '-y', '--no-install-recommends'] + self._name).run()
         elif self._action == PackageAction.INSTALL:
-            return run(['apt-get', 'install', '-y', '--no-install-recommends'] + self._name)
+            return Run(['apt-get', 'install', '-y', '--no-install-recommends'] + self._name).run()
         elif self._action == PackageAction.REMOVE:
-            return run(['apt-get', 'remove', '-y'] + self._name)
-        return TaskResult(error='Action not available')
+            return Run(['apt-get', 'remove', '-y'] + self._name).run()
 
 
 class YumPackageTask(PackageTask):
     def run(self):
+        super(YumPackageTask, self).run()
+
         if self._action == PackageAction.UPDATE:
-            return run(['yum', 'update'])
+            return Run(['yum', 'update']).run()
         elif self._action == PackageAction.UPGRADE:
-            return run(['yum', 'upgrade', '-y'] + self._name)
+            return Run(['yum', 'upgrade', '-y'] + self._name).run()
         elif self._action == PackageAction.INSTALL:
-            return run(['yum', 'install', '-y'] + self._name)
+            return Run(['yum', 'install', '-y'] + self._name).run()
         elif self._action == PackageAction.REMOVE:
-            return run(['yum', 'remove', '-y'] + self._name)
-        return TaskResult(error='Action not available')
+            return Run(['yum', 'remove', '-y'] + self._name).run()
 
 
 def package(*args, **kwargs):
-    PackageTask.package(*args, **kwargs)
+    PackageTask.package(*args, **kwargs).run()
 
 
 def mac_app_store(*args, **kwargs):
-    MasPackageTask(*args, **kwargs)
+    MasPackageTask(*args, **kwargs).run()
 
 
 def homebrew_package(*args, **kwargs):
-    HomebrewPackageTask(*args, **kwargs)
+    HomebrewPackageTask(*args, **kwargs).run()
 
 
 def cask_package(*args, **kwargs):
-    CaskPackageTask(*args, **kwargs)
+    CaskPackageTask(*args, **kwargs).run()
 
 
 def apt_package(*args, **kwargs):
-    AptPackageTask(*args, **kwargs)
+    AptPackageTask(*args, **kwargs).run()
 
 
 def yum_package(*args, **kwargs):
-    YumPackageTask(*args, **kwargs)
+    YumPackageTask(*args, **kwargs).run()
