@@ -5,3 +5,7 @@ def replace_all(s, replacements={}):
         value = replacements[key]
         s = s.replace(key, value)
     return s
+
+
+def is_string(string):
+    return type(string) is str or type(string) is unicode

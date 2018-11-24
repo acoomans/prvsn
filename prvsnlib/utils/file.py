@@ -13,7 +13,7 @@ if sys.version_info < (3, 0):
 else:
     from urllib.request import urlopen
 
-from .string import replace_all
+from .string import replace_all, is_string
 
 
 #--- File types
@@ -26,11 +26,13 @@ def is_url(text):
     return False
 
 
-def is_likely_text_file(path):
-    if 'text' in mimetypes.guess_type(path)[0]:
-        logging.debug(path + ' is likely text')
+def is_likely_text_file(url):
+    type = mimetypes.guess_type(url)[0]
+    logging.debug('Guessing filetype ' + type + ' for ' + url)
+    if 'text' in type :
+        logging.debug(url + ' is likely text')
         return True
-    logging.debug(path + ' is not likely text')
+    logging.debug(url + ' is not likely text')
     return False
 
 #--- Directories
@@ -73,11 +75,17 @@ def get_file_bytes_or_text(src, relative=None):
     if is_url(src):
         logging.debug('Fetching ' + src + ' from network')
         response = urlopen(src)
-        bytes = response.read()
-        encoding = response.headers.get_content_charset()
+        b = response.read()
+
+        encoding = None
+        if 'get_content_charset' in dir(response.headers): # python 3 only
+            encoding = response.headers.get_content_charset()
+        elif is_likely_text_file(src):
+            encoding = 'utf-8'
+
         if encoding:
-            return bytes.decode(encoding)
-        return bytes
+            return b.decode(encoding)
+        return b
     else:
         logging.debug('Fetching ' + src + ' from local disk')
         if relative:
@@ -94,8 +102,8 @@ def get_file_bytes_or_text(src, relative=None):
                     return text
             else:
                 with open(src, 'rb') as f:
-                    bytes = f.read()
-                    return bytes
+                    b = bytearray(f.read())
+                    return b
         else:
             logging.debug(src + ' does not exist')
             return None
@@ -108,7 +116,7 @@ def write_file_bytes_or_text(filepath, bytes_or_text):
         with open(filepath, 'wb') as f:
             logging.debug('Writing bytes to ' + filepath + '.')
             f.write(b)
-    elif type(bytes_or_text) is str:
+    elif is_string(bytes_or_text):
         text = bytes_or_text
         with open(filepath, 'w') as f:
             logging.debug('Writing text to ' + filepath + '.')
@@ -125,7 +133,7 @@ def copy_file(src, dest, relative=None, replacements={}, diff=True):
         raise Exception(src + ' file not found')
 
     if replacements:
-        if type(original_data) is str:
+        if is_string(original_data):
             new_data = replace_all(original_data, replacements)
             if diff:
                 for line in difflib.unified_diff(
@@ -150,7 +158,7 @@ def add_string_if_not_present_in_file(filepath, string, diff=True):
     if not original_data:
         original_data = ''
 
-    if not type(original_data) is str:
+    if not is_string(original_data):
         raise Exception('Cannot add line to binary data')
 
     if string not in original_data:
@@ -177,7 +185,7 @@ def delete_string_from_file(filepath, string, diff=True):
     if not original_data:
         original_data = ''
 
-    if not type(original_data) is str:
+    if not is_string(original_data):
         raise Exception('Cannot add line to binary data')
 
     if string in original_data:

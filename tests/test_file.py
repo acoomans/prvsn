@@ -14,6 +14,7 @@ from prvsnlib.utils.file import (
 
     is_likely_text_file,
 )
+from prvsnlib.utils.string import is_string
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
@@ -59,7 +60,7 @@ class TestFile(unittest.TestCase):
         if not os.path.exists('/tmp/prvsn'):
             os.mkdir('/tmp/prvsn')
         shutil.copyfile(self.file, self.test_file)
-        shutil.copyfile(self.file, self.test_zip)
+        shutil.copyfile(self.zip, self.test_zip)
 
     def tearDown(self):
         if os.path.exists(self.test_file):
@@ -192,7 +193,7 @@ class TestFileContents(TestFile):
     def test_get_file_text_from_http_url(self):
         contents = get_file_bytes_or_text(self.test_file_url)
         self.assertTrue(contents)
-        self.assertTrue(type(contents) is str)
+        self.assertTrue(is_string(contents))
 
     def test_get_file_bytes_from_http_url(self):
         contents = get_file_bytes_or_text(self.zip_file_url)
@@ -202,12 +203,12 @@ class TestFileContents(TestFile):
     def test_get_file_text_from_local_file(self):
         contents = get_file_bytes_or_text(self.file)
         self.assertTrue(contents)
-        self.assertTrue(type(contents) is str)
+        self.assertTrue(is_string(contents))
 
     def test_get_file_bytes_from_local_file(self):
         contents = get_file_bytes_or_text(self.test_zip)
         self.assertTrue(contents)
-        self.assertTrue(type(contents) is bytes)
+        self.assertTrue(type(contents) is bytes or type(contents) is bytearray)
 
     def test_copy_file_txt(self):
         copy_file(self.test_file, self.test_file, replacements={'c':'e'})
