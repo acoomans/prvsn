@@ -11,7 +11,7 @@ with open(path.join(here, 'requirements.txt')) as f:
 
 setup(
     name='prvsn',
-    version=0.2,
+    version=0.3,
     author='Arnaud Coomans',
     author_email='hello@acoomans.com',
     description='A simple provisioning tool',
