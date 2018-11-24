@@ -36,13 +36,14 @@ def is_likely_text_file(path):
 #--- Directories
 
 def mkdir_p(path):
-    try:
-        os.makedirs(path)
-    except OSError as e:
-        if e.errno == errno.EEXIST and os.path.isdir(path):
-            logging.debug('Directory ' + path + ' already exists.')
-        else:
-            raise e
+    if path:
+        try:
+            os.makedirs(path)
+        except OSError as e:
+            if e.errno == errno.EEXIST and os.path.isdir(path):
+                logging.debug('Directory ' + path + ' already exists.')
+            else:
+                raise e
 
 #--- Ownership
 

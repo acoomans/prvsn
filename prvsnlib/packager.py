@@ -77,8 +77,7 @@ class Packager:
             fd, self._dest = tempfile.mkstemp(suffix='.pyz')
 
         dest_path = os.path.dirname(self._dest)
-        if not os.path.exists(dest_path):
-            mkdir_p(dest_path)
+        mkdir_p(dest_path)
 
         self.prepare_package()
 
