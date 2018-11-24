@@ -16,10 +16,10 @@ from .filetype import (
 from .hostname import (
     hostname,
 )
-#
-# from .kernel import (
-#     module,
-# )
+
+from .kernel import (
+    module,
+)
 #
 # from .package import (
 #     apt_package,
