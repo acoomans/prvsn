@@ -1,23 +1,16 @@
+import logging
 import subprocess
 
-from ..task import Task, TaskResult
-from prvsnlib.utils.run import run
+from prvsnlib.utils.run import Run
 
 
 class FiletypeHandlerType:
     DUTI = 'duti'
 
 
-class FiletypeHandlerTask(Task):
+class FiletypeHandlerTask:
+
     _file_handler_tool = None
-
-    def __init__(self, extension='.txt', handler=None, **kwargs):
-        Task.__init__(self, **kwargs)
-        self._extension = extension
-        self._handler = handler
-
-    def __str__(self):
-        return 'File "' + self._extension + '" handler: ' + self._handler
 
     @property
     def file_handler_tool(self):
@@ -29,13 +22,13 @@ class FiletypeHandlerTask(Task):
                 pass
         return self.__class__._file_handler_tool
 
-    def run(self):
-        cmd, out, ret, err = '', '', '', ''
-        if self.file_handler_tool == FiletypeHandlerType.DUTI:
-            cmd, out, ret, err = run(['duti', '-s', self._handler, self._extension, 'all'])
-            return TaskResult(command=cmd, output=out, returncode=ret, error=err)
-        return TaskResult(error='No file handler tool available.')
+    def run(self, extension, handler):
+        logging.header('File ' + extension + ' handled by ' + handler)
+
+        if self.__class__._file_handler_tool == FiletypeHandlerType.DUTI:
+            Run(['duti', '-s', handler, extension, 'all']).run()
+        raise Exception('No tool available for handling file types.')
 
 
-def file_handler(*args, **kwargs):
-    FiletypeHandlerTask(*args, **kwargs)
+def file_handler(extension, handler):
+    FiletypeHandlerTask().run(extension, handler)

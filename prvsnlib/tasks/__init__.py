@@ -8,11 +8,11 @@ from .file import (
     chown,
     file,
 )
-#
-# from .filetype import (
-#     file_handler
-# )
-#
+
+from .filetype import (
+    file_handler
+)
+
 # from .hostname import (
 #     hostname,
 # )
