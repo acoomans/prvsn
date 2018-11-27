@@ -19,7 +19,7 @@ def unzip(src, dest, owner=None, group=None, action=ZipAction.EXTRACT):
         global context
 
         if not os.path.exists(src):
-            source = os.path.join(context.role.path, 'files', src)
+            src = os.path.join(context.role.path, 'files', src)
 
         zf = zipfile.ZipFile(src)
         r = zf.extractall(dest)
@@ -28,8 +28,3 @@ def unzip(src, dest, owner=None, group=None, action=ZipAction.EXTRACT):
             chown(dest, owner, group, recursive=True)
     else:
         raise Exception('Invalid action')
-
-
-
-
-
