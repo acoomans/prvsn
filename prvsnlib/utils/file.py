@@ -6,6 +6,7 @@ import mimetypes
 import os
 import pwd
 import shutil
+import subprocess
 import sys
 
 if sys.version_info < (3, 0):
@@ -27,13 +28,25 @@ def is_url(text):
 
 
 def is_likely_text_file(url):
+    result = False
     type = mimetypes.guess_type(url)[0]
-    logging.debug('Guessing filetype ' + type + ' for ' + url)
-    if 'text' in type :
+    logging.debug('Guessing filetype ' + str(type) + ' for ' + str(url))
+    if type:
+        if 'text' in str(type).lower():
+            result = True
+    else:
+        try:
+            output = subprocess.check_output(['file', url])
+            if 'text' in output.lower():
+                result = True
+        except subprocess.CalledProcessError as e:
+            pass
+
+    if result:
         logging.debug(url + ' is likely text')
-        return True
-    logging.debug(url + ' is not likely text')
-    return False
+    else:
+        logging.debug(url + ' is not likely text')
+    return result
 
 #--- Directories
 
@@ -159,7 +172,7 @@ def add_string_if_not_present_in_file(filepath, string, diff=True):
         original_data = ''
 
     if not is_string(original_data):
-        raise Exception('Cannot add line to binary data')
+        raise Exception('Cannot add line to binary data (' + str(type(original_data)) + ')')
 
     if string not in original_data:
         new_data = original_data
