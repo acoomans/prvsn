@@ -30,6 +30,8 @@ from .package import (
     yum_package,
 )
 
-from .zip import (
-    unzip
+from .unarchive import (
+    unarchive,
+    untar,
+    unzip,
 )
