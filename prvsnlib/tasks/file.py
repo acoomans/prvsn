@@ -22,7 +22,8 @@ def file(a, b=None,
         logging.header('Setting up file ' + b)
 
         base = os.path.basename(b)
-        mkdir_p(base)
+        if base != b:
+            mkdir_p(base)
 
         global context
 
