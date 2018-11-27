@@ -12,7 +12,7 @@ class PackageAction:
     REMOVE = 'remove'
 
 
-class PackageTask:
+class PackageTask(object):
 
     _packageClass = None
 
