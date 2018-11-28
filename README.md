@@ -47,6 +47,8 @@ If those are your goals, have a look at Puppet or Chef or others.
 
 ### Install
 
+Note 27/11/2018: this tool is under active development; prefer github for latest improvements and bug fixes!
+
 From PyPi:
 
     pip install prvsn
