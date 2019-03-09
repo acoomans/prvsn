@@ -37,7 +37,7 @@ def is_likely_text_file(url):
     else:
         try:
             output = subprocess.check_output(['file', url])
-            if 'text' in output.lower():
+            if 'text' in output.decode("utf-8").lower():
                 result = True
         except subprocess.CalledProcessError as e:
             pass
