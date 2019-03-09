@@ -43,7 +43,7 @@ def file(src=None, dst=None,
                     src = path
                     logging.debug('No source file specified; assuming ' + src)
 
-        base = os.path.basename(dst)
+        base = os.path.dirname(dst)
         if base != dst:
             mkdir_p(base)
 

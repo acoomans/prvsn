@@ -19,4 +19,8 @@ file(
     dst='/tmp/lklklklklklklklklklklklklk'
 )
 
+file(
+    dst='/tmp/fsdfsd/qweqe'
+)
+
 

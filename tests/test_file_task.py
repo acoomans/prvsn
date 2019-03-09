@@ -35,33 +35,32 @@ class TestFileTask(unittest.TestCase):
     def path4(self):
         return '/tmp/lklklklklklklklklklklklklk'
 
+    @property
+    def path5(self):
+        return '/tmp/fsdfsd/qweqe'
+
+    def clean_all_files(self):
+        for path in [
+            self.path1,
+            self.path2,
+            self.path3,
+            self.path4,
+            self.path5,
+        ]:
+            if os.path.exists(path):
+                os.unlink(path)
+
+        dir5 = os.path.dirname(self.path5)
+        if os.path.exists(dir5):
+            os.rmdir(dir5)
 
     def setUp(self):
-        if os.path.exists(self.path1):
-            os.unlink(self.path1)
-        if os.path.exists(self.path2):
-            os.unlink(self.path2)
-        if os.path.exists(self.path3):
-            os.unlink(self.path3)
-        if os.path.exists(self.path4):
-            os.unlink(self.path4)
+        self.clean_all_files()
 
     def tearDown(self):
-        if os.path.exists(self.path1):
-            os.unlink(self.path1)
-        if os.path.exists(self.path2):
-            os.unlink(self.path2)
-        if os.path.exists(self.path3):
-            os.unlink(self.path3)
-        if os.path.exists(self.path4):
-            os.unlink(self.path4)
+        self.clean_all_files()
 
     def testFile(self):
-
-        self.assertFalse(os.path.exists(self.path1), 'file should not exist yet; test set up incorrectly?')
-        self.assertFalse(os.path.exists(self.path2), 'file should not exist yet; test set up incorrectly?')
-        self.assertFalse(os.path.exists(self.path3), 'file should not exist yet; test set up incorrectly?')
-        self.assertFalse(os.path.exists(self.path4), 'file should not exist yet; test set up incorrectly?')
 
         Provisioner(
             Runbook(self.runbook),
@@ -72,6 +71,7 @@ class TestFileTask(unittest.TestCase):
         self.assertTrue(os.path.exists(self.path2), 'file at ' + self.path2 + ' should exist')
         self.assertTrue(os.path.exists(self.path3), 'file at ' + self.path3 + ' should exist')
         self.assertTrue(os.path.exists(self.path4), 'file at ' + self.path4 + ' should exist')
+        self.assertTrue(os.path.exists(self.path5), 'file at ' + self.path5 + ' should exist')
 
         with open(self.path2, 'r') as f:
             contents = f.read()
@@ -84,8 +84,3 @@ class TestFileTask(unittest.TestCase):
         with open(self.path4, 'r') as f:
             contents = f.read()
         self.assertEqual(contents, '')
-
-        os.unlink(self.path1)
-        os.unlink(self.path2)
-        os.unlink(self.path3)
-        os.unlink(self.path4)
