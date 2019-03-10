@@ -8,7 +8,8 @@ else:
     from urllib.parse import urlparse
 
 from prvsnlib.context import context
-from prvsnlib.utils.file import mkdir_p, copy_file
+from prvsnlib.utils.file import copy_file
+from prvsnlib.utils.file import mkdir_p as mkdir
 from prvsnlib.utils.file import chown as chown_util
 
 
@@ -44,7 +45,7 @@ def file(src=None, dst=None,
 
         base = os.path.dirname(dst)
         if base != dst:
-            mkdir_p(base)
+            mkdir(base)
 
         if src:
             logging.info('Copying ' + src + ' to ' + dst)

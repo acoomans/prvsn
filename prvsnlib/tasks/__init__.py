@@ -8,6 +8,7 @@ from .file import (
     chown,
     file,
     file_contains,
+    mkdir,
 )
 
 from .filetype import (
