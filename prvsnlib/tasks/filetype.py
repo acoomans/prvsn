@@ -12,23 +12,27 @@ class FiletypeHandlerTask:
 
     _file_handler_tool = None
 
-    @property
-    def file_handler_tool(self):
-        if not self.__class__._file_handler_tool:
+    @classmethod
+    def file_handler_tool(cls, *args, **kwargs):
+        if not cls._file_handler_tool:
             try:
                 if subprocess.check_output(['which', 'duti']):
-                    self.__class__._file_handler_tool = FiletypeHandlerType.DUTI
+                    cls._file_handler_tool = FiletypeHandlerType.DUTI
             except Exception:
                 pass
-        return self.__class__._file_handler_tool
+        return cls._file_handler_tool
 
-    def run(self, extension, handler):
-        logging.header('File ' + extension + ' handled by ' + handler)
+    def __init__(self, extension, handler):
+        self._extension = extension
+        self._handler = handler
 
-        if self.__class__._file_handler_tool == FiletypeHandlerType.DUTI:
-            Run(['duti', '-s', handler, extension, 'all']).run()
+    def run(self):
+        logging.header('File ' + self._extension + ' handled by ' + self._handler)
+        file_handler_tool = self.__class__.file_handler_tool()
+        if file_handler_tool == FiletypeHandlerType.DUTI:
+            return Run(['duti', '-s', self._handler, self._extension, 'all']).run()
         raise Exception('No tool available for handling file types.')
 
 
 def file_handler(extension, handler):
-    FiletypeHandlerTask().run(extension, handler)
+    FiletypeHandlerTask(extension, handler).run()
