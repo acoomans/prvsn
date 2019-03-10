@@ -26,6 +26,7 @@ from .kernel import (
 from .package import (
     apt_package,
     cask_package,
+    homebrew_install,
     homebrew_package,
     mac_app_store,
     mac_app_store_signin,

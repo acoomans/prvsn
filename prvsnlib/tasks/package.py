@@ -1,5 +1,6 @@
 import getpass
 import logging
+import os
 import subprocess
 
 from prvsnlib.utils.run import Run
@@ -132,11 +133,21 @@ class YumPackageTask(PackageTask):
 def package(*args, **kwargs):
     PackageTask.package(*args, **kwargs).run()
 
-def mac_app_store(*args, **kwargs):
-    MasPackageTask(*args, **kwargs).run()
 
 def mac_app_store_signin(email):
     MasPackageTask(email, action=PackageAction.SIGNIN)
+
+def mac_app_store(*args, **kwargs):
+    MasPackageTask(*args, **kwargs).run()
+
+
+def homebrew_install(user=None, force=False):
+    if not os.path.exists('/usr/local/bin/brew') or force:
+        logging.header('Install homebrew')
+        brew_cmd = '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+        Run(['bash', '-e'], stdin=brew_cmd, user=user).run()
+    else:
+        logging.info('Homebrew already installed.')
 
 def homebrew_package(*args, **kwargs):
     HomebrewPackageTask(*args, **kwargs).run()
