@@ -16,7 +16,6 @@ class FileAction:
     ADD = 'add'
     REMOVE = 'remove'
 
-
 def file(src=None, dst=None,
          replacements={},
          owner=None, group=None,
@@ -82,3 +81,21 @@ def chown(path,
           recursive=False):
     logging.header('Changing ownership of file ' + path)
     chown_util(path, owner, group, recursive)
+
+
+def file_contains(path,
+                  string,
+                  newline=True,
+                  owner=None, group=None,
+                  diff=True,
+                  secure=False):
+    logging.header('Content for file ' + path)
+    with open(path, 'r') as f:
+        content = f.read()
+        if not string in content:
+            with open(path, 'a+') as f:
+                if newline:
+                    f.write('\n')
+                f.write(string)
+    if owner or group:
+        chown_util(path, owner, group, recursive=False)

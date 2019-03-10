@@ -39,6 +39,14 @@ class TestFileTask(unittest.TestCase):
     def path5(self):
         return '/tmp/fsdfsd/qweqe'
 
+    @property
+    def path6(self):
+        return '/tmp/nncncnncncncncncn/a.txt'
+
+    @property
+    def path7(self):
+        return '/tmp/nncncnncncncncncn/b.txt'
+
     def clean_all_files(self):
         for path in [
             self.path1,
@@ -46,6 +54,8 @@ class TestFileTask(unittest.TestCase):
             self.path3,
             self.path4,
             self.path5,
+            self.path6,
+            self.path7,
         ]:
             if os.path.exists(path):
                 os.unlink(path)
@@ -84,3 +94,21 @@ class TestFileTask(unittest.TestCase):
         with open(self.path4, 'r') as f:
             contents = f.read()
         self.assertEqual(contents, '')
+
+    def testFileContains(self):
+
+        Provisioner(
+            Runbook(self.runbook),
+            ['file_contains'],
+        ).run()
+
+        self.assertTrue(os.path.exists(self.path6), 'file at ' + self.path6 + ' should exist')
+        self.assertTrue(os.path.exists(self.path7), 'file at ' + self.path7 + ' should exist')
+
+        with open(self.path6, 'r') as f:
+            contents = f.read()
+        self.assertEqual(contents, 'hello')
+
+        with open(self.path7, 'r') as f:
+            contents = f.read()
+        self.assertEqual(contents, 'bye\nhello')
