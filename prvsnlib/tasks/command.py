@@ -9,11 +9,11 @@ class CommandAction:
     RUN = 'run'
 
 
-def command(interpreter, commands, user=None, action=CommandAction.RUN):
+def command(interpreter, commands, user=None, ignore_errors=False, action=CommandAction.RUN):
     if action == CommandAction.RUN:
         logging.header('Run ' + interpreter[0])
 
-        return Run(interpreter, stdin=commands, user=user).run()
+        return Run(interpreter, stdin=commands, user=user, ignore_errors=ignore_errors).run()
 
     else:
         raise Exception('Invalid action')
