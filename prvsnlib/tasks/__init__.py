@@ -28,6 +28,7 @@ from .package import (
     cask_package,
     homebrew_package,
     mac_app_store,
+    mac_app_store_signin,
     package,
     yum_package,
 )

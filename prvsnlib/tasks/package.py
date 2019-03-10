@@ -10,6 +10,7 @@ class PackageAction:
     UPGRADE = 'upgrade'
     INSTALL = 'install'
     REMOVE = 'remove'
+    SIGNIN = 'signin'
 
 
 class PackageTask(object):
@@ -97,7 +98,8 @@ class MasPackageTask(PackageTask):
             return Run(['mas', 'install'] + self._name, user=self._user).run()
         elif self._action == PackageAction.REMOVE:
             raise Exception('No remove function for app store.')
-
+        elif self._action == PackageAction.SIGNIN:
+            return Run(['mas', 'signin'] + self._name, user=self._user, ignore_errors=True).run()
 
 class AptPackageTask(PackageTask):
     def run(self):
@@ -130,10 +132,11 @@ class YumPackageTask(PackageTask):
 def package(*args, **kwargs):
     PackageTask.package(*args, **kwargs).run()
 
-
 def mac_app_store(*args, **kwargs):
     MasPackageTask(*args, **kwargs).run()
 
+def mac_app_store_signin(email):
+    MasPackageTask(email, action=PackageAction.SIGNIN)
 
 def homebrew_package(*args, **kwargs):
     HomebrewPackageTask(*args, **kwargs).run()
