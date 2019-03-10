@@ -35,3 +35,8 @@ from .unarchive import (
     untar,
     unzip,
 )
+
+from .user import (
+    real_user,
+    real_home,
+)
