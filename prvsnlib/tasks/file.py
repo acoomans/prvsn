@@ -8,8 +8,7 @@ else:
     from urllib.parse import urlparse
 
 from prvsnlib.context import context
-from prvsnlib.utils.file import copy_file
-from prvsnlib.utils.file import mkdir_p as mkdir
+from prvsnlib.utils.file import mkdir_p, copy_file
 from prvsnlib.utils.file import chown as chown_util
 
 
@@ -98,5 +97,10 @@ def file_contains(path,
                 if newline:
                     f.write('\n')
                 f.write(string)
+    if owner or group:
+        chown_util(path, owner, group, recursive=False)
+
+def mkdir(path, owner=None, group=None):
+    mkdir_p(path)
     if owner or group:
         chown_util(path, owner, group, recursive=False)
