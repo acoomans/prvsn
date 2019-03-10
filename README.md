@@ -90,8 +90,7 @@ A role's `main.py` can contain one or more `tasks` (also called `states` since t
 
 Common task options include:
 
-- `secure`: no output will be shown on console nor logs.
-
+- `secure`: no output will be shown on console nor logs. 
 
 #### Command Tasks
 
@@ -114,9 +113,9 @@ Runs some code in bash. Hopefully this is never needed.
 Runs some code in ruby.
 
 
-### File Extension Handler Tasks
+#### File Extension Handler Tasks
 
-`file_handler` (mac only)
+`file_handler()` (mac only)
 
 Associate an application with a file extension.
 
@@ -130,7 +129,7 @@ The application's identifier can be found with:
 
 #### File Tasks
 
-`file(source, file, replacements={})`:
+`file(src, dst, replacements={}, owner, group)`:
 
 `source` can either be a URL or a file's path relative to the role's `files` directory.
 
@@ -151,9 +150,20 @@ replacements rules can be specified, so the file acts as a template.
 		}
 	)
 
-### Hostname tasks
+`file_contains(path, string, owner, group)`:
 
-`hostname`:
+Append `string` to the file at `path` if `string` is not already in file.
+
+
+`mkdir(path)`:
+
+Create all directories, similar to bash's `mkdir -p`.
+
+    mkdir(path, owner, group)
+
+#### Hostname tasks
+
+`hostname(name)`:
 
     hostname('my_machine')
 
@@ -167,7 +177,7 @@ Adds and loads a module.
 
 #### Package Tasks
 
-`package`:
+`package(name, action)`:
 
 Should automatically detect the package manager in presence. 
 If multiple managers are present, it is possible to explicitly specify which to use:
@@ -179,9 +189,13 @@ If multiple managers are present, it is possible to explicitly specify which to 
 	emacs
 	'''.split()]
 
+`homebrew_install` (mac only)
+
 `homebrew_package` (mac only)
 
 `cask_package` (mac only)
+
+`mac_app_store_signin` (mac only)
 
 `mac_app_store` (mac only)
 
@@ -191,10 +205,23 @@ Application identifiers can be found with:
     
     mas search app_name
 
-
 `apt_package`
 
 `yum_package`
+
+### Helpers
+
+Helpers do not alter the system. They only return information.
+
+#### User Helpers
+
+`real_home()`:
+
+Returns the home of the user, ignoring sudo.
+
+`real_user()`:
+
+Returns the name of the user, ignoring sudo.
 
 
 ### Command line
