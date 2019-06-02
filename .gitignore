@@ -3,7 +3,7 @@ dist
 *.egg-info
 .eggs
 *.pyc
-venv
+venv*
 virtualenv
 build
 package.pyz

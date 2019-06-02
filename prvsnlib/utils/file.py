@@ -16,21 +16,23 @@ else:
 
 from .string import replace_all, is_string
 
+BACKUP_EXTENSION = '.orig'
 
-#--- File types
+
+# --- File types
 
 def is_url(text):
     if '://' in text:
-        logging.debug(text + ' is a URL')
+        logging.debug('%s is a URL' % text)
         return True
-    logging.debug(text + ' is not a URL')
+    logging.debug('%s is not a URL' % text)
     return False
 
 
 def is_likely_text_file(url):
     result = False
     type = mimetypes.guess_type(url)[0]
-    logging.debug('Guessing filetype ' + str(type) + ' for ' + str(url))
+    logging.debug('Guessing filetype %s for %s' % (str(type), str(url)))
     if type:
         if 'text' in str(type).lower():
             result = True
@@ -43,24 +45,26 @@ def is_likely_text_file(url):
             pass
 
     if result:
-        logging.debug(url + ' is likely text')
+        logging.debug('%s is likely text' % url)
     else:
-        logging.debug(url + ' is not likely text')
+        logging.debug('%s is likely not text' % url)
     return result
 
-#--- Directories
 
-def mkdir_p(path):
+# --- Directories
+
+def makedirs(path):
     if path:
         try:
             os.makedirs(path)
         except OSError as e:
             if e.errno == errno.EEXIST and os.path.isdir(path):
-                logging.debug('Directory ' + path + ' already exists.')
+                logging.debug('Directory %s already exists' % path)
             else:
                 raise e
 
-#--- Ownership
+
+# --- Ownership
 
 def chown(path, owner=None, group=None, recursive=False):
     uid = pwd.getpwnam(owner).pw_uid if owner else -1
@@ -75,18 +79,20 @@ def chown(path, owner=None, group=None, recursive=False):
     else:
         os.chown(path, uid, gid)
 
-#--- Backup
+
+# --- Backup
 
 def backup_file(filepath):
     if os.path.exists(filepath):
-        logging.debug('Making backup of ' + filepath)
-        shutil.copyfile(filepath, filepath + '.orig')
+        logging.debug('Making backup of %s' % filepath)
+        shutil.copyfile(filepath, filepath + BACKUP_EXTENSION)
 
-#--- File contents
+
+# --- File contents
 
 def get_file_bytes_or_text(src, relative=None):
     if is_url(src):
-        logging.debug('Fetching ' + src + ' from network')
+        logging.debug('Fetching %s from network' % src)
         response = urlopen(src)
         b = response.read()
 
@@ -100,13 +106,13 @@ def get_file_bytes_or_text(src, relative=None):
             return b.decode(encoding)
         return b
     else:
-        logging.debug('Fetching ' + src + ' from local disk')
+        logging.debug('Fetching %s from local disk' % src)
         if relative:
             rel_src = os.path.join(relative, src)
             if os.path.exists(rel_src):
                 src = rel_src
             else:
-                logging.debug('files/' + src + ' does not exist')
+                logging.debug('files/%s does not exist' % src)
 
         if os.path.exists(src):
             if is_likely_text_file(src):
@@ -118,7 +124,7 @@ def get_file_bytes_or_text(src, relative=None):
                     b = bytearray(f.read())
                     return b
         else:
-            logging.debug(src + ' does not exist')
+            logging.debug('%s does not exist' % src)
             return None
 
 
@@ -127,15 +133,15 @@ def write_file_bytes_or_text(filepath, bytes_or_text):
     if type(bytes_or_text) is bytearray or type(bytes_or_text) is bytes:
         b = bytes_or_text
         with open(filepath, 'wb') as f:
-            logging.debug('Writing bytes to ' + filepath + '.')
+            logging.debug('Writing bytes to %s' % filepath)
             f.write(b)
     elif is_string(bytes_or_text):
         text = bytes_or_text
         with open(filepath, 'w') as f:
-            logging.debug('Writing text to ' + filepath + '.')
+            logging.debug('Writing text to %s' % filepath)
             f.write(text)
     else:
-        raise Exception('write_file_bytes_or_text: argument nor bytes nor text')
+        raise Exception('argument nor bytes nor text')
 
 
 def copy_file(src, dest, relative=None, replacements={}, diff=True):
@@ -143,7 +149,7 @@ def copy_file(src, dest, relative=None, replacements={}, diff=True):
 
     original_data = get_file_bytes_or_text(src, relative)
     if not original_data:
-        raise Exception(src + ' file not found')
+        raise Exception('%s file not found' % src)
 
     if replacements:
         if is_string(original_data):
@@ -152,7 +158,7 @@ def copy_file(src, dest, relative=None, replacements={}, diff=True):
                 for line in difflib.unified_diff(
                         original_data.splitlines(),
                         new_data.splitlines(),
-                        fromfile=dest + '.orig',
+                        fromfile=dest + BACKUP_EXTENSION,
                         tofile=dest):
                     logging.info(line.strip())
         else:
@@ -162,7 +168,6 @@ def copy_file(src, dest, relative=None, replacements={}, diff=True):
 
     write_file_bytes_or_text(dest, new_data)
 
-#--- File contents manipulation
 
 def add_string_if_not_present_in_file(filepath, string, diff=True):
     backup_file(filepath)
@@ -172,7 +177,7 @@ def add_string_if_not_present_in_file(filepath, string, diff=True):
         original_data = ''
 
     if not is_string(original_data):
-        raise Exception('Cannot add line to binary data (' + str(type(original_data)) + ')')
+        raise Exception('Cannot add line to binary data (%s)' % str(type(original_data)))
 
     if string not in original_data:
         new_data = original_data
@@ -184,7 +189,7 @@ def add_string_if_not_present_in_file(filepath, string, diff=True):
             for line in difflib.unified_diff(
                     original_data.splitlines(),
                     new_data.splitlines(),
-                    fromfile=filepath + '.orig',
+                    fromfile=filepath + BACKUP_EXTENSION,
                     tofile=filepath):
                 logging.info(line.strip())
 
@@ -208,7 +213,7 @@ def delete_string_from_file(filepath, string, diff=True):
             for line in difflib.unified_diff(
                     original_data.splitlines(),
                     new_data.splitlines(),
-                    fromfile=filepath + '.orig',
+                    fromfile=filepath + BACKUP_EXTENSION,
                     tofile=filepath):
                 logging.info(line.strip())
 

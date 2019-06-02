@@ -1,8 +1,6 @@
-class ProvisioningContext:
+class Context:
 
     def __init__(self):
-        self.runbook = None
-        self.role = None
-
-
-context = ProvisioningContext()
+        Context.instance = self
+        # self.runbook = None
+        # self.role = None

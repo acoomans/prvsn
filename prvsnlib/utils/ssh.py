@@ -4,17 +4,18 @@ import pty
 import os
 
 # from prvsnlib.utils.run import run
-from prvsnlib.utils.file import mkdir_p
+from prvsnlib.utils.file import makedirs
 
 CHILD = 0
 
+#TODO
 
+class SSH:
 
-class Ssh:
-
-    def __init__(self, hostname='localhost', username=getpass.getuser(), password=None):
+    def __init__(self, hostname='localhost', username=getpass.getuser(), port=22, password=None):
         self.hostname = hostname
         self.username = username
+        self.port = port
         self._password = password
 
         self._commands = None
@@ -46,7 +47,7 @@ class Ssh:
         public_key_file = key_file + '.pub'
         if not os.path.exists(public_key_file):
             config_dir = os.path.dirname(key_file)
-            mkdir_p(config_dir)
+            makedirs(config_dir)
             os.chmod(config_dir, 0o700)
             logging.info('No public key found; creating a new key at "' + self.public_key_file + '"')
             self.run([
@@ -57,7 +58,7 @@ class Ssh:
                 '-N', ''
             ])
 
-    def copy_public_keys(self):
+    def copy_keys(self):
         self.create_public_key_file_if_not_exist()
 
         return self.run([
@@ -79,7 +80,10 @@ class Ssh:
 
         return self.run(commands_to_run)
 
-    def copy_to(self, src, dest):
+    def copy_file(self, src, dest=None):
+
+        if not dest:
+            dest = src
 
         if os.path.dirname(dest):
             self.run_command('mkdir -p ' + os.path.dirname(dest))

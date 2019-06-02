@@ -6,11 +6,12 @@ import time
 class Timer:
 
     def __init__(self):
+        self.start()
+
+    def start(self):
         self._start = time.time()
 
-    def get(self):
+    def log_elapsed_time(self):
         delta = time.time() - self._start
-        logging.info(
-            'Elapsed wall time clock: ' + str(delta)
-        )
+        logging.info('Elapsed wall time clock: %d' % str(delta))
         return self

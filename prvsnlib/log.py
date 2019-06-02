@@ -10,7 +10,8 @@ class StdoutLogger:
 
         class Redirection:
 
-            def write(self, message):
+            @staticmethod
+            def write(message):
                 logging.info(message.strip())
 
             def flush(self):

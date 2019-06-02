@@ -5,21 +5,18 @@ import tempfile
 import textwrap
 
 import prvsnlib
-from prvsnlib.utils.file import mkdir_p
+from prvsnlib.utils.file import makedirs
 from prvsnlib.utils.zip import zipdir
 
 
 class Packager:
 
-    def __init__(self, runbook, roles=None, tmpdir=None, dest=None, cleanup=True, verbose=False):
-        if roles is None:
-            roles = []
-        self._runbook = runbook
-        self._roles = roles
-        self._tmpdir = tmpdir
-        self._dest = dest
-        self._verbose = verbose
-        self._cleanup = cleanup
+    def __init__(self, runbooks, tmpdir=None, dest=None, cleanup=True, verbose=False):
+        self.runbooks = runbooks
+        self.tmpdir = tmpdir
+        self.dest = dest
+        self.verbose = verbose
+        self.cleanup = cleanup
 
     @property
     def prvsnlib_path(self):
@@ -29,55 +26,27 @@ class Packager:
 
     @property
     def package_main_contents(self):
-        return textwrap.dedent('''
-            #!/usr/bin/python
-            
-            import logging
-            import os
-            import tempfile
-            import shutil
-            import zipfile 
-        
-            from prvsnlib.provisioner import Provisioner
-            from prvsnlib.runbook import Runbook
-            
-            def extract_runbook():
-                d = tempfile.mkdtemp()
-                logging.debug('Extracting runbook to ' + d)
-                my_archive = os.path.dirname(__file__) 
-                zf = zipfile.ZipFile(my_archive)
-                zf.extractall(d)
-                return d
-                
-            def delete_runbook(d):
-                logging.debug('Cleaning up runbook ' + d)
-                shutil.rmtree(d)
-
-            def main():
-                logging.root.setLevel(logging.{loglevel})
-
-                d = extract_runbook()
-                Provisioner(
-                    Runbook(os.path.join(d, 'runbook')),
-                    {roles},
-                ).run()
-                delete_runbook(d)
-
-            if __name__ == "__main__":
-                main()
-        ''').strip().format(
-            roles=self._roles,
-            loglevel=('DEBUG' if self._verbose else 'INFO')
+        directory, _ = os.path.split(os.path.dirname(__file__))
+        file = os.path.join(directory, 'bootstrap.py')
+        contents = open(file).read().replace(
+            '#ARGUMENTS#',
+            '''
+            runbooks = [],
+            loglevel = logging.
+            ''' % {
+                'loglevel': ('DEBUG' if self.verbose else 'INFO')
+            }
         )
+        return contents
 
     def build_package(self):
-        logging.header('Packaging runbook "' + self._runbook.path + '"')
+        logging.header('Packaging runbook "%s"' % self.runbook.path)
 
         if not self._dest:
             fd, self._dest = tempfile.mkstemp(suffix='.pyz')
 
         dest_path = os.path.dirname(self._dest)
-        mkdir_p(dest_path)
+        makedirs(dest_path)
 
         self.prepare_package()
 

@@ -6,18 +6,14 @@ import subprocess
 import sys
 
 from prvsnlib.log import StdoutLogger
-from prvsnlib.role import Role
 from .context import context
 
 
 class Provisioner:
 
-    def __init__(self, runbook, roles, extra_imports={}):
+    def __init__(self, runbooks, extra_imports={}):
         logging.debug('Provisioner init')
-
-        self._runbook = runbook
-        self._roles = roles
-
+        self.runbooks = runbooks
         self._extra_imports = extra_imports
         self._run_locals = {}
 

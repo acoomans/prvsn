@@ -1,25 +1,48 @@
-import inspect
 import logging
 import os
 import shutil
+import tempfile
 import unittest
 
 from prvsnlib.utils.file import (
+    is_likely_text_file,
     add_string_if_not_present_in_file,
     delete_string_from_file,
-
-    write_file_bytes_or_text,
     get_file_bytes_or_text,
     copy_file,
-
-    is_likely_text_file,
 )
 from prvsnlib.utils.string import is_string
+from tests.helper import unittest_dir, unittest_file
 
-logging.basicConfig(format='%(message)s', level=logging.INFO)
+verbose = False
+if verbose:
+    logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 
-class TestFile(unittest.TestCase):
+class TestFileTypes(unittest.TestCase):
+
+    def testTextFile(self):
+        file = unittest_file('file.txt')
+        self.assertTrue(is_likely_text_file(file))
+
+    def testBinaryFile(self):
+        file = unittest_file('file.png')
+        self.assertFalse(is_likely_text_file(file))
+
+
+class TestFileCase(unittest.TestCase):
+
+    def setUp(self):
+        self.d = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.d)
+
+    def setup_file(self, file):
+        src = os.path.join(unittest_dir(), file)
+        dst = os.path.join(self.d, file)
+        shutil.copyfile(src, dst)
+        return dst
 
     def assertSameFiles(self, file1, file2):
         with open(file1, 'r') as f:
@@ -28,170 +51,106 @@ class TestFile(unittest.TestCase):
             data2 = f.readlines()
         self.assertEqual(data1, data2)
 
-    @property
-    def file(self):
-        this_file = inspect.getfile(inspect.currentframe())
-        this_dir = os.path.dirname(os.path.abspath(this_file))
-        return os.path.join(this_dir, 'files', 'file.txt')
-
-    @property
-    def test_file(self):
-        return '/tmp/prvsn/test.txt'
-
-    @property
-    def orig_file(self):
-        return '/tmp/prvsn/test.txt.orig'
-
-    @property
-    def zip(self):
-        this_file = inspect.getfile(inspect.currentframe())
-        this_dir = os.path.dirname(os.path.abspath(this_file))
-        return os.path.join(this_dir, 'files', 'test.zip')
-
-    @property
-    def test_zip(self):
-        return '/tmp/prvsn/test.zip'
-
-    @property
-    def orig_zip(self):
-        return '/tmp/prvsn/test.zip.orig'
-
-    def setUp(self):
-        if not os.path.exists('/tmp/prvsn'):
-            os.mkdir('/tmp/prvsn')
-        shutil.copyfile(self.file, self.test_file)
-        shutil.copyfile(self.zip, self.test_zip)
-
-    def tearDown(self):
-        if os.path.exists(self.test_file):
-            os.remove(self.test_file)
-
-        if os.path.exists(self.orig_file):
-            os.remove(self.orig_file)
-
-        if os.path.exists(self.test_zip):
-            os.remove(self.test_zip)
-
-        if os.path.exists(self.orig_zip):
-            os.remove(self.orig_zip)
-
-        if os.path.exists('/tmp/prvsn'):
-            os.rmdir('/tmp/prvsn')
+    def assertFileContains(self, file, pattern, times=1):
+        with open(file) as f:
+            data = f.readlines()
+        if times == '+':
+            self.assertGreater(data.count(pattern), 0, 'the file %s should contain at least one "%s"' % (file, pattern))
+        elif isinstance(times, int):
+            self.assertEqual(data.count(pattern), times, 'the file %s should contain %i "%s"' % (file, times, pattern))
 
 
-class TestFileAddAndDelete(TestFile):
+class TestFileAddAndDelete(TestFileCase):
 
     def testAddFileNotExist(self):
-        path = '/tmp/blah'
-        if os.path.exists(path):
-            os.unlink(path)
+        path = os.path.join(self.d, 'testAddFileNotExist.txt')
+
+        add_string_if_not_present_in_file(path, 'hello')
+
+        self.assertTrue(os.path.isfile(path), 'new file should exist')
+        self.assertFileContains(path, 'hello\n', 1)
+
+    def testAddStringNotPresent(self):
+        name = 'testAddStringNotPresent.txt'
+        path = self.setup_file(name)
+        self.assertFileContains(path, 'c\n', 0)
+
+        add_string_if_not_present_in_file(path, 'c')
+
+        self.assertTrue(os.path.isfile(path), 'new file should exist')
+        self.assertFileContains(path, 'a\n', 1)
+        self.assertFileContains(path, 'b\n', 1)
+        self.assertFileContains(path, 'c\n', 1)
+
+        backup = path + '.orig'
+        self.assertTrue(os.path.isfile(backup), 'backup file should exist')
+        self.assertSameFiles(os.path.join(unittest_dir(), name), backup)
+
+    def testAddStringPresent(self):
+        name = 'testAddStringPresent.txt'
+        path = self.setup_file(name)
+        self.assertFileContains(path, 'a\n', 2)
+
         add_string_if_not_present_in_file(path, 'a')
 
         self.assertTrue(os.path.isfile(path), 'new file should exist')
+        self.assertFileContains(path, 'a\n', 2)
+        self.assertFileContains(path, 'b\n', 1)
 
-        with open(path) as f:
-            data = f.readlines()
-        self.assertEqual(data.count('a\n'), 1)
-
-    def testAddNotPresent(self):
-
-        with open(self.test_file) as f:
-            data = f.readlines()
-        self.assertEqual(data.count('e\n'), 0, 'the test file should contain 0 "e"; test not set up correctly?')
-
-        add_string_if_not_present_in_file(self.test_file, 'e')
-
-        self.assertTrue(os.path.isfile(self.test_file), 'new file should exist')
-        self.assertTrue(os.path.isfile(self.orig_file), 'backup file should exist')
-        self.assertSameFiles(self.file, self.orig_file)
-
-        with open(self.test_file) as f:
-            data = f.readlines()
-        self.assertEqual(data.count('a\n'), 5)
-        self.assertEqual(data.count('b\n'), 1)
-        self.assertEqual(data.count('c\n'), 1)
-        self.assertEqual(data.count('d\n'), 1)
-        self.assertEqual(data.count('e\n'), 1)
-
-    def testAddPresent(self):
-
-        with open(self.test_file) as f:
-            data = f.readlines()
-        self.assertEqual(data.count('a\n'), 5, 'the test file should contain 5 "a"; test not set up correctly?')
-
-        add_string_if_not_present_in_file(self.test_file, 'a')
-
-        self.assertTrue(os.path.isfile(self.test_file), 'new file should exist')
-        self.assertTrue(os.path.isfile(self.orig_file), 'backup file should exist')
-        self.assertSameFiles(self.file, self.orig_file)
-
-        with open(self.test_file) as f:
-            data = f.readlines()
-        self.assertEqual(data.count('a\n'), 5)
-        self.assertEqual(data.count('b\n'), 1)
-        self.assertEqual(data.count('c\n'), 1)
-        self.assertEqual(data.count('d\n'), 1)
+        backup = path + '.orig'
+        self.assertTrue(os.path.isfile(backup), 'backup file should exist')
+        self.assertSameFiles(os.path.join(unittest_dir(), name), backup)
 
     def testDelFileNotExist(self):
-        path = '/tmp/blah'
-        if os.path.exists(path):
-            os.unlink(path)
+        path = os.path.join(self.d, 'testDelFileNotExist.txt')
 
-        delete_string_from_file(path, '')
-        self.assertTrue(os.path.isfile(self.test_file), 'new file should exist')
+        delete_string_from_file(path, 'a')
+        self.assertFalse(os.path.isfile(path), 'file should not exist')
 
-    def testDelPresent(self):
+    def testDelStringPresent(self):
+        name = 'testDelStringPresent.txt'
+        path = self.setup_file(name)
+        self.assertFileContains(path, 'a\n', 2)
 
-        with open(self.test_file) as f:
-            data = f.readlines()
-        self.assertEqual(data.count('a\n'), 5, 'the test file should contain 5 "a"; test not set up correctly?')
+        delete_string_from_file(path, 'a')
 
-        delete_string_from_file(self.test_file, 'a')
+        self.assertTrue(os.path.isfile(path), 'new file should exist')
+        self.assertFileContains(path, 'a\n', 0)
+        self.assertFileContains(path, 'b\n', 1)
 
-        self.assertTrue(os.path.isfile(self.test_file), 'new file should exist')
-        self.assertTrue(os.path.isfile(self.orig_file), 'backup file should exist')
-        self.assertSameFiles(self.file, self.orig_file)
+        backup = path + '.orig'
+        self.assertTrue(os.path.isfile(backup), 'backup file should exist')
+        self.assertSameFiles(os.path.join(unittest_dir(), name), backup)
 
-        with open(self.test_file) as f:
-            data = f.readlines()
-        self.assertEqual(data.count('a\n'), 0)
-        self.assertEqual(data.count('b\n'), 1)
-        self.assertEqual(data.count('c\n'), 1)
-        self.assertEqual(data.count('d\n'), 1)
+    def testDelStringNotPresent(self):
+        name = 'testDelStringNotPresent.txt'
+        path = self.setup_file(name)
+        self.assertFileContains(path, 'c\n', 0)
 
-    def testDelNotPresent(self):
+        delete_string_from_file(path, 'c')
 
-        with open(self.test_file) as f:
-            data = f.readlines()
-        self.assertEqual(data.count('e\n'), 0, 'the test file should contain 0 "e"; test not set up correctly?')
+        self.assertTrue(os.path.isfile(path), 'new file should exist')
+        self.assertFileContains(path, 'a\n', 2)
+        self.assertFileContains(path, 'b\n', 1)
+        self.assertFileContains(path, 'c\n', 0)
 
-        delete_string_from_file(self.test_file, 'e')
-
-        self.assertTrue(os.path.isfile(self.test_file), 'new file should exist')
-        self.assertTrue(os.path.isfile(self.orig_file), 'backup file should exist')
-        self.assertSameFiles(self.file, self.orig_file)
-
-        with open(self.test_file) as f:
-            data = f.readlines()
-        self.assertEqual(data.count('a\n'), 5)
-        self.assertEqual(data.count('b\n'), 1)
-        self.assertEqual(data.count('c\n'), 1)
-        self.assertEqual(data.count('d\n'), 1)
-        self.assertEqual(data.count('e\n'), 0)
+        backup = path + '.orig'
+        self.assertTrue(os.path.isfile(backup), 'backup file should exist')
+        self.assertSameFiles(os.path.join(unittest_dir(), name), backup)
 
 
-class TestFileContents(TestFile):
+class TestFileContents(TestFileCase):
 
     @property
-    def test_file_url(self):
-        return 'https://raw.githubusercontent.com/acoomans/prvsn/master/tests/files/file.txt'
+    def text_file_url(self):
+        return 'https://raw.githubusercontent.com/acoomans/prvsn/master/tests/test_file/file.txt'
 
     @property
     def zip_file_url(self):
-        return 'https://raw.githubusercontent.com/acoomans/prvsn/master/tests/files/test.zip'
+        return 'https://raw.githubusercontent.com/acoomans/prvsn/master/tests/test_file/file.zip'
 
     def test_get_file_text_from_http_url(self):
-        contents = get_file_bytes_or_text(self.test_file_url)
+        contents = get_file_bytes_or_text(self.text_file_url)
         self.assertTrue(contents)
         self.assertTrue(is_string(contents))
 
@@ -201,38 +160,33 @@ class TestFileContents(TestFile):
         self.assertTrue(type(contents) is bytes)
 
     def test_get_file_text_from_local_file(self):
-        contents = get_file_bytes_or_text(self.file)
+        path = unittest_file('file.txt')
+        contents = get_file_bytes_or_text(path)
         self.assertTrue(contents)
         self.assertTrue(is_string(contents))
 
     def test_get_file_bytes_from_local_file(self):
-        contents = get_file_bytes_or_text(self.test_zip)
+        path = unittest_file('file.zip')
+        contents = get_file_bytes_or_text(path)
         self.assertTrue(contents)
         self.assertTrue(type(contents) is bytes or type(contents) is bytearray)
 
     def test_copy_file_txt(self):
-        copy_file(self.test_file, self.test_file, replacements={'c':'e'})
-        with open(self.test_file) as f:
-            data = f.readlines()
-        self.assertEqual(data.count('a\n'), 5)
-        self.assertEqual(data.count('b\n'), 1)
-        self.assertEqual(data.count('c\n'), 0)
-        self.assertEqual(data.count('d\n'), 1)
-        self.assertEqual(data.count('e\n'), 1)
+        path = self.setup_file('test_copy_file_txt.txt')
+
+        new = path + '.new'
+        copy_file(path, new, replacements={'b':'e'}, diff=verbose)
+        self.assertFileContains(new, 'a\n', 1)
+        self.assertFileContains(new, 'b\n', 0)
+        self.assertFileContains(new, 'e\n', 1)
+        self.assertFileContains(new, 'c\n', 1)
 
     def test_copy_file_bytes(self):
+        path = self.setup_file('test_copy_file_bytes.zip')
         with self.assertRaises(Exception):
-            copy_file(self.test_zip, self.test_zip, replacements={'c': 'e'})
+            copy_file(path, path, replacements={'c': 'e'})
 
     def test_copy_file_no_src(self):
+        path = os.path.join(self.d, 'test_copy_file_no_src.txt')
         with self.assertRaises(Exception):
-            copy_file('/tmp/fsfrrrrrrrrrrr', self.test_file, replacements={'c': 'e'})
-
-
-class TestFileType(TestFile):
-
-    def test_is_likely_binary_file_txt(self):
-        self.assertTrue(is_likely_text_file(self.file))
-
-    def test_is_likely_binary_file_zip(self):
-        self.assertFalse(is_likely_text_file(self.test_zip))
+            copy_file(path, path, replacements={'c': 'e'})
