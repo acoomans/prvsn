@@ -20,7 +20,7 @@ setup(
     license='BSD',
     platforms='any',
     keywords=[
-        'provision',
+        'provisioning',
     ],
     install_requires=requirements,
     scripts=['scripts/prvsn'],
